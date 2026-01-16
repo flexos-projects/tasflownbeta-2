@@ -1,0 +1,60 @@
+{
+  "id": "001-initial",
+  "name": "Initial Build",
+  "type": "full",
+  "status": "complete",
+  "created": "2025-01-10T00:00:00Z",
+  "started": "2025-01-10T00:00:00Z",
+  "completed": "2025-01-11T00:00:00Z",
+
+  "description": "Complete TaskFlow application from scratch - all core pages, auth, and data layer using Nuxt 3, Supabase, and Tailwind CSS.",
+
+  "sourceSpecs": [
+    "specs/003-features_core.md",
+    "specs/004-features_auth.md",
+    "specs/006-pages_landing.md",
+    "specs/007-pages_dashboard.md",
+    "specs/008-pages_projects.md",
+    "specs/009-pages_settings.md",
+    "specs/010-pages_login.md",
+    "specs/011-pages_signup.md",
+    "specs/012-database_schema.md",
+    "specs/013-flows_onboarding.md"
+  ],
+
+  "prototypes": [
+    "prototype/001-landing.html",
+    "prototype/002-dashboard.html",
+    "prototype/003-projects.html",
+    "prototype/004-settings.html",
+    "prototype/005-login.html",
+    "prototype/006-signup.html",
+    "prototype/007-onboarding.html"
+  ],
+
+  "dataFiles": [],
+
+  "designFiles": [
+    "prototype/shared/tokens.css",
+    "prototype/shared/components.css",
+    "prototype/shared/mockdb.js",
+    "prototype/shared/mockdb-data.json",
+    "prototype/patterns/decisions.md",
+    "prototype/patterns/components.md",
+    "prototype/patterns/layouts.md"
+  ],
+
+  "preserve": [
+    ".gitignore",
+    "README.md",
+    "package.json",
+    "nuxt.config.ts"
+  ],
+
+  "execution": {
+    "resumeFrom": null,
+    "completedTasks": ["001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011", "012", "013", "014", "015", "016", "017", "018"],
+    "stopOnError": true,
+    "autoCommit": true
+  }
+}

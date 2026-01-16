@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - TaskFlow</title>
+
+  <!-- Design Tokens & Components -->
+  <link rel="stylesheet" href="shared/tokens.css">
+  <link rel="stylesheet" href="shared/components.css">
+
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    /* App Shell */
+    .app-shell {
+      display: flex;
+      min-height: 100dvh;
+    }
+
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-6);
+      background-color: var(--color-background);
+    }
+
+    /* Mobile header (shown on mobile only) */
+    .mobile-header {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4);
+      background-color: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+    }
+
+    .mobile-header-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+    }
+
+    .mobile-header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    /* Page Header */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .page-greeting {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-semibold);
+      color: var(--color-text);
+    }
+
+    .page-date {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-top: var(--space-1);
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      gap: var(--space-6);
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr 320px;
+      }
+    }
+
+    .dashboard-main {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: 0;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-4);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+    }
+
+    .section-title-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .section-title-count {
+      font-weight: var(--font-normal);
+      color: var(--color-text-muted);
+    }
+
+    .section-title--warning {
+      color: var(--color-error-600);
+    }
+
+    .section-title--warning .section-title-icon {
+      color: var(--color-error);
+    }
+
+    /* Task List */
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      background-color: var(--color-surface);
+    }
+
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      transition: background-color var(--duration-150);
+      cursor: pointer;
+    }
+
+    .task-item:last-child {
+      border-bottom: none;
+    }
+
+    .task-item:hover {
+      background-color: var(--color-surface-hover);
+    }
+
+    .task-item--completed .task-title {
+      text-decoration: line-through;
+      color: var(--color-text-muted);
+    }
+
+    .task-checkbox {
+      margin-top: var(--space-0-5);
+    }
+
+    .task-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-title {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-text);
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-1);
+    }
+
+    .task-project {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    .task-project-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .task-due {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    .task-due--overdue {
+      color: var(--color-error);
+      font-weight: var(--font-medium);
+    }
+
+    .task-priority {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .task-priority-icon {
+      width: 12px;
+      height: 12px;
+      color: var(--color-warning);
+    }
+
+    .task-actions {
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity var(--duration-150);
+    }
+
+    .task-item:hover .task-actions {
+      opacity: 1;
+    }
+
+    /* Project List */
+    .project-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .project-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: border-color var(--duration-150), box-shadow var(--duration-150);
+    }
+
+    .project-card:hover {
+      border-color: var(--color-border-hover);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .project-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .project-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .project-name {
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-text);
+    }
+
+    .project-tasks {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      margin-top: var(--space-0-5);
+    }
+
+    .project-arrow {
+      width: 16px;
+      height: 16px;
+      color: var(--color-text-muted);
+      opacity: 0;
+      transition: opacity var(--duration-150);
+    }
+
+    .project-card:hover .project-arrow {
+      opacity: 1;
+    }
+
+    /* View All Link */
+    .view-all {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+      font-weight: var(--font-medium);
+      cursor: pointer;
+      transition: color var(--duration-150);
+    }
+
+    .view-all:hover {
+      color: var(--color-primary-hover);
+    }
+
+    .view-all-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Empty State - Minimal */
+    .task-list-empty {
+      padding: var(--space-8) var(--space-6);
+      text-align: center;
+    }
+
+    .task-list-empty-icon {
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-2);
+    }
+
+    .task-list-empty-title {
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+    }
+
+    .task-list-empty-description {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    /* Sidebar Projects Panel */
+    .projects-panel {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    /* Mobile: Sidebar hidden, content full width */
+    @media (max-width: 767px) {
+      .sidebar {
+        display: none;
+      }
+
+      .mobile-header {
+        display: flex;
+      }
+
+      .app-content {
+        padding: var(--space-4);
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-2);
+      }
+
+      .page-greeting {
+        font-size: var(--text-xl);
+      }
+
+      .task-actions {
+        opacity: 1;
+      }
+
+      .project-arrow {
+        opacity: 1;
+      }
+    }
+
+    /* Sidebar mobile overlay */
+    @media (max-width: 767px) {
+      .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: var(--z-modal-backdrop);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity var(--duration-200), visibility var(--duration-200);
+      }
+
+      .sidebar-overlay.open {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .sidebar.mobile-open {
+        display: flex;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: var(--z-modal);
+        transform: translateX(0);
+      }
+    }
+
+    /* Notification badge */
+    .notification-badge {
+      position: relative;
+    }
+
+    .notification-badge::after {
+      content: '';
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      background-color: var(--color-error);
+      border-radius: 50%;
+      border: 2px solid var(--color-surface);
+    }
+
+    /* Bottom Nav (Mobile) */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      padding: var(--space-2) var(--space-4);
+      padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
+      z-index: var(--z-fixed);
+    }
+
+    .bottom-nav-items {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-2);
+      color: var(--color-text-muted);
+      font-size: var(--text-xs);
+      cursor: pointer;
+      min-width: 64px;
+      border-radius: var(--radius-lg);
+      transition: color var(--duration-150);
+    }
+
+    .bottom-nav-item:hover,
+    .bottom-nav-item.active {
+      color: var(--color-primary);
+    }
+
+    .bottom-nav-item-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    @media (max-width: 767px) {
+      .bottom-nav {
+        display: block;
+      }
+
+      .app-content {
+        padding-bottom: calc(var(--space-4) + 80px);
+      }
+    }
+
+    /* Add Task FAB (Mobile) */
+    .fab {
+      display: none;
+      position: fixed;
+      bottom: calc(80px + env(safe-area-inset-bottom, 0px) + var(--space-4));
+      right: var(--space-4);
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background-color: var(--color-primary);
+      color: var(--color-white);
+      box-shadow: var(--shadow-lg);
+      z-index: var(--z-fixed);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color var(--duration-150), transform var(--duration-150);
+    }
+
+    .fab:hover {
+      background-color: var(--color-primary-hover);
+      transform: scale(1.05);
+    }
+
+    .fab:active {
+      transform: scale(0.95);
+    }
+
+    .fab-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    @media (max-width: 767px) {
+      .fab {
+        display: flex;
+      }
+    }
+
+    /* Skeleton loading */
+    .skeleton-task {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .skeleton-task:last-child {
+      border-bottom: none;
+    }
+
+    .skeleton-checkbox {
+      width: 18px;
+      height: 18px;
+      border-radius: var(--radius-default);
+      margin-top: var(--space-0-5);
+    }
+
+    .skeleton-task-content {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app">
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+      <button class="btn btn-ghost btn-icon" @click="toggleSidebar">
+        <i data-lucide="menu"></i>
+      </button>
+      <span class="mobile-header-title">Dashboard</span>
+      <div class="mobile-header-actions">
+        <button class="btn btn-ghost btn-icon notification-badge" v-if="unreadNotifications > 0">
+          <i data-lucide="bell"></i>
+        </button>
+        <button class="btn btn-ghost btn-icon" v-else>
+          <i data-lucide="bell"></i>
+        </button>
+        <div class="avatar avatar-sm">{{ userInitials }}</div>
+      </div>
+    </header>
+
+    <!-- Sidebar Overlay (Mobile) -->
+    <div class="sidebar-overlay" :class="{ open: sidebarOpen }" @click="toggleSidebar"></div>
+
+    <div class="app-shell">
+      <!-- Sidebar -->
+      <aside class="sidebar" :class="{ 'mobile-open': sidebarOpen }">
+        <div class="sidebar-header">
+          <span class="text-lg font-semibold">TaskFlow</span>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="sidebar-section">
+            <div class="nav nav-vertical">
+              <a href="#" class="nav-item active">
+                <i data-lucide="layout-dashboard" class="nav-item-icon"></i>
+                Dashboard
+              </a>
+              <a href="#" class="nav-item">
+                <i data-lucide="folder" class="nav-item-icon"></i>
+                Projects
+              </a>
+              <a href="#" class="nav-item">
+                <i data-lucide="calendar" class="nav-item-icon"></i>
+                Calendar
+              </a>
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">Projects</div>
+            <div class="nav nav-vertical">
+              <a href="#" class="nav-item" v-for="project in activeProjects" :key="project.id">
+                <span class="task-project-dot" :style="{ backgroundColor: project.color }"></span>
+                {{ project.name }}
+              </a>
+            </div>
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="flex items-center gap-3">
+            <div class="avatar avatar-sm">{{ userInitials }}</div>
+            <div class="flex-1">
+              <div class="text-sm font-medium">{{ user.name }}</div>
+              <div class="text-xs text-muted">{{ user.email }}</div>
+            </div>
+            <button class="btn btn-ghost btn-icon btn-sm">
+              <i data-lucide="settings"></i>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="app-content">
+        <!-- Page Header -->
+        <header class="page-header">
+          <div>
+            <h1 class="page-greeting">{{ greeting }}, {{ user.name.split(' ')[0] }}</h1>
+            <p class="page-date">{{ formattedDate }}</p>
+          </div>
+          <button class="btn btn-primary hidden md:flex">
+            <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+            New Task
+          </button>
+        </header>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+          <!-- Main Column -->
+          <div class="dashboard-main">
+            <!-- Today's Tasks -->
+            <section class="section">
+              <div class="section-header">
+                <h2 class="section-title">
+                  Today
+                  <span class="section-title-count">({{ todayTasks.length }})</span>
+                </h2>
+                <a href="#" class="view-all" v-if="todayTasks.length > 5">
+                  See all
+                  <i data-lucide="arrow-right" class="view-all-icon"></i>
+                </a>
+              </div>
+
+              <!-- Loading State -->
+              <div class="task-list" v-if="loading">
+                <div class="skeleton-task" v-for="i in 3" :key="i">
+                  <div class="skeleton skeleton-checkbox"></div>
+                  <div class="skeleton-task-content">
+                    <div class="skeleton skeleton-text" style="width: 70%;"></div>
+                    <div class="skeleton skeleton-text" style="width: 40%; height: 12px;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Empty State -->
+              <div class="task-list" v-else-if="todayTasks.length === 0">
+                <div class="task-list-empty">
+                  <div class="task-list-empty-icon">&#127881;</div>
+                  <div class="task-list-empty-title">Nothing due today</div>
+                  <div class="task-list-empty-description">Enjoy your free time, or add some tasks to stay productive.</div>
+                </div>
+              </div>
+
+              <!-- Task List -->
+              <div class="task-list" v-else>
+                <div
+                  class="task-item"
+                  :class="{ 'task-item--completed': task.done }"
+                  v-for="task in todayTasks.slice(0, 5)"
+                  :key="task.id"
+                  @click="openTask(task)"
+                >
+                  <input
+                    type="checkbox"
+                    class="checkbox task-checkbox"
+                    :checked="task.done"
+                    @click.stop="toggleTask(task)"
+                  >
+                  <div class="task-content">
+                    <span class="task-title">{{ task.title }}</span>
+                    <div class="task-meta">
+                      <span class="task-project">
+                        <span class="task-project-dot" :style="{ backgroundColor: getProject(task.project_id).color }"></span>
+                        {{ getProject(task.project_id).name }}
+                      </span>
+                      <span class="task-priority" v-if="task.priority === 'high'">
+                        <i data-lucide="alert-circle" class="task-priority-icon"></i>
+                      </span>
+                    </div>
+                  </div>
+                  <button class="btn btn-ghost btn-icon btn-sm task-actions" @click.stop>
+                    <i data-lucide="more-horizontal"></i>
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Overdue Tasks -->
+            <section class="section" v-if="overdueTasks.length > 0">
+              <div class="section-header">
+                <h2 class="section-title section-title--warning">
+                  <i data-lucide="alert-triangle" class="section-title-icon"></i>
+                  Overdue
+                  <span class="section-title-count">({{ overdueTasks.length }})</span>
+                </h2>
+              </div>
+
+              <div class="task-list">
+                <div
+                  class="task-item"
+                  v-for="task in overdueTasks.slice(0, 5)"
+                  :key="task.id"
+                  @click="openTask(task)"
+                >
+                  <input
+                    type="checkbox"
+                    class="checkbox task-checkbox"
+                    :checked="task.done"
+                    @click.stop="toggleTask(task)"
+                  >
+                  <div class="task-content">
+                    <span class="task-title">{{ task.title }}</span>
+                    <div class="task-meta">
+                      <span class="task-project">
+                        <span class="task-project-dot" :style="{ backgroundColor: getProject(task.project_id).color }"></span>
+                        {{ getProject(task.project_id).name }}
+                      </span>
+                      <span class="task-due task-due--overdue">
+                        {{ getDaysOverdue(task.due_date) }} days overdue
+                      </span>
+                    </div>
+                  </div>
+                  <button class="btn btn-ghost btn-icon btn-sm task-actions" @click.stop>
+                    <i data-lucide="more-horizontal"></i>
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Recent Projects (Mobile - shown below tasks) -->
+            <section class="section lg:hidden">
+              <div class="section-header">
+                <h2 class="section-title">Recent Projects</h2>
+                <a href="#" class="view-all">
+                  View all
+                  <i data-lucide="arrow-right" class="view-all-icon"></i>
+                </a>
+              </div>
+
+              <div class="project-list">
+                <div
+                  class="project-card"
+                  v-for="project in recentProjects.slice(0, 3)"
+                  :key="project.id"
+                  @click="openProject(project)"
+                >
+                  <span class="project-color" :style="{ backgroundColor: project.color }"></span>
+                  <div class="project-info">
+                    <div class="project-name">{{ project.name }}</div>
+                    <div class="project-tasks">{{ getTasksRemaining(project) }} tasks left</div>
+                  </div>
+                  <i data-lucide="chevron-right" class="project-arrow"></i>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Sidebar Column (Desktop) -->
+          <aside class="projects-panel hidden lg:block">
+            <div class="section-header">
+              <h2 class="section-title">Recent Projects</h2>
+              <a href="#" class="view-all">
+                View all
+                <i data-lucide="arrow-right" class="view-all-icon"></i>
+              </a>
+            </div>
+
+            <div class="project-list">
+              <div
+                class="project-card"
+                v-for="project in recentProjects"
+                :key="project.id"
+                @click="openProject(project)"
+              >
+                <span class="project-color" :style="{ backgroundColor: project.color }"></span>
+                <div class="project-info">
+                  <div class="project-name">{{ project.name }}</div>
+                  <div class="project-tasks">{{ getTasksRemaining(project) }} tasks left</div>
+                </div>
+                <i data-lucide="chevron-right" class="project-arrow"></i>
+              </div>
+            </div>
+
+            <!-- Empty state for projects -->
+            <div class="card" v-if="recentProjects.length === 0">
+              <div class="empty-state" style="padding: var(--space-8);">
+                <div class="empty-state-icon" style="width: 48px; height: 48px;">
+                  <i data-lucide="folder-plus"></i>
+                </div>
+                <h3 class="empty-state-title" style="font-size: var(--text-sm);">No projects yet</h3>
+                <p class="empty-state-description" style="font-size: var(--text-xs);">Create your first project to get started.</p>
+                <button class="btn btn-primary btn-sm">Create Project</button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <!-- FAB (Mobile) -->
+    <button class="fab">
+      <i data-lucide="plus" class="fab-icon"></i>
+    </button>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav-items">
+        <a href="#" class="bottom-nav-item active">
+          <i data-lucide="home" class="bottom-nav-item-icon"></i>
+          <span>Home</span>
+        </a>
+        <a href="#" class="bottom-nav-item">
+          <i data-lucide="folder" class="bottom-nav-item-icon"></i>
+          <span>Projects</span>
+        </a>
+        <a href="#" class="bottom-nav-item">
+          <i data-lucide="bell" class="bottom-nav-item-icon"></i>
+          <span>Inbox</span>
+        </a>
+        <a href="#" class="bottom-nav-item">
+          <i data-lucide="settings" class="bottom-nav-item-icon"></i>
+          <span>Settings</span>
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <script>
+    const { createApp, ref, computed, onMounted } = Vue;
+
+    // Mock data (matches mockdb-data.json structure)
+    const mockData = {
+      currentUser: {
+        id: "user-1",
+        email: "alice@taskflow.app",
+        name: "Alice Johnson",
+        avatar_url: null
+      },
+      projects: [
+        {
+          id: "proj-1",
+          name: "Website Redesign",
+          color: "#3b82f6",
+          task_count: 8,
+          completed_count: 3,
+          updated_at: "2025-01-14T08:00:00Z"
+        },
+        {
+          id: "proj-2",
+          name: "Mobile App v2",
+          color: "#22c55e",
+          task_count: 12,
+          completed_count: 5,
+          updated_at: "2025-01-13T16:45:00Z"
+        },
+        {
+          id: "proj-3",
+          name: "Q1 2025 Planning",
+          color: "#f59e0b",
+          task_count: 6,
+          completed_count: 2,
+          updated_at: "2025-01-12T14:20:00Z"
+        }
+      ],
+      tasks: [
+        {
+          id: "task-2",
+          project_id: "proj-1",
+          title: "Review mockup with stakeholders",
+          done: false,
+          due_date: "2025-01-14",
+          priority: "high"
+        },
+        {
+          id: "task-3",
+          project_id: "proj-1",
+          title: "Implement header component",
+          done: false,
+          due_date: "2025-01-14",
+          priority: "medium"
+        },
+        {
+          id: "task-7",
+          project_id: "proj-2",
+          title: "Design app icon and splash screen",
+          done: false,
+          due_date: "2025-01-12",
+          priority: "medium"
+        },
+        {
+          id: "task-8",
+          project_id: "proj-2",
+          title: "Implement offline data sync",
+          done: false,
+          due_date: "2025-01-25",
+          priority: "high"
+        },
+        {
+          id: "task-11",
+          project_id: "proj-3",
+          title: "Review budget allocation",
+          done: false,
+          due_date: "2025-01-18",
+          priority: "medium"
+        }
+      ],
+      notifications: [
+        { id: "notif-1", read_at: null },
+        { id: "notif-2", read_at: null }
+      ]
+    };
+
+    createApp({
+      setup() {
+        // State
+        const loading = ref(true);
+        const sidebarOpen = ref(false);
+        const user = ref(mockData.currentUser);
+        const projects = ref(mockData.projects);
+        const tasks = ref(mockData.tasks);
+        const notifications = ref(mockData.notifications);
+
+        // Use current date for demo
+        const today = new Date();
+
+        // Computed
+        const userInitials = computed(() => {
+          return user.value.name
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase();
+        });
+
+        const greeting = computed(() => {
+          const hour = today.getHours();
+          if (hour >= 5 && hour < 12) return 'Good morning';
+          if (hour >= 12 && hour < 17) return 'Good afternoon';
+          if (hour >= 17 && hour < 21) return 'Good evening';
+          return 'Working late';
+        });
+
+        const formattedDate = computed(() => {
+          const options = { weekday: 'long', month: 'short', day: 'numeric' };
+          return today.toLocaleDateString('en-US', options);
+        });
+
+        const todayTasks = computed(() => {
+          const todayStr = today.toISOString().split('T')[0];
+          return tasks.value.filter(t => t.due_date === todayStr && !t.done);
+        });
+
+        const overdueTasks = computed(() => {
+          const todayStr = today.toISOString().split('T')[0];
+          return tasks.value.filter(t => t.due_date && t.due_date < todayStr && !t.done);
+        });
+
+        const activeProjects = computed(() => {
+          return projects.value.filter(p => !p.archived_at);
+        });
+
+        const recentProjects = computed(() => {
+          return [...activeProjects.value]
+            .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+            .slice(0, 5);
+        });
+
+        const unreadNotifications = computed(() => {
+          return notifications.value.filter(n => !n.read_at).length;
+        });
+
+        // Methods
+        const getProject = (projectId) => {
+          return projects.value.find(p => p.id === projectId) || { name: 'Unknown', color: '#6b7280' };
+        };
+
+        const getTasksRemaining = (project) => {
+          return project.task_count - project.completed_count;
+        };
+
+        const getDaysOverdue = (dueDate) => {
+          const due = new Date(dueDate);
+          const diffTime = today - due;
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          return diffDays;
+        };
+
+        const toggleTask = (task) => {
+          task.done = !task.done;
+          // In real app: API call, optimistic update, remove from list with delay
+        };
+
+        const openTask = (task) => {
+          console.log('Open task:', task.id);
+          // Navigate to project or open task detail modal
+        };
+
+        const openProject = (project) => {
+          console.log('Open project:', project.id);
+          // Navigate to /projects/:id
+        };
+
+        const toggleSidebar = () => {
+          sidebarOpen.value = !sidebarOpen.value;
+        };
+
+        // Simulate loading
+        onMounted(() => {
+          setTimeout(() => {
+            loading.value = false;
+            // Re-initialize Lucide icons after Vue renders
+            setTimeout(() => {
+              lucide.createIcons();
+            }, 0);
+          }, 800);
+        });
+
+        return {
+          loading,
+          sidebarOpen,
+          user,
+          projects,
+          tasks,
+          userInitials,
+          greeting,
+          formattedDate,
+          todayTasks,
+          overdueTasks,
+          activeProjects,
+          recentProjects,
+          unreadNotifications,
+          getProject,
+          getTasksRemaining,
+          getDaysOverdue,
+          toggleTask,
+          openTask,
+          openProject,
+          toggleSidebar
+        };
+      }
+    }).mount('#app');
+
+    // Initialize Lucide icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>

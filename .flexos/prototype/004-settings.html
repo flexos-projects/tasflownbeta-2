@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - TaskFlow</title>
+
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Design Tokens & Components -->
+  <link rel="stylesheet" href="shared/tokens.css">
+  <link rel="stylesheet" href="shared/components.css">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    /* App shell */
+    .app-shell {
+      display: flex;
+      min-height: 100dvh;
+    }
+
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-6);
+      background-color: var(--color-background);
+    }
+
+    /* Page header */
+    .page-header {
+      margin-bottom: var(--space-6);
+    }
+
+    .page-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-semibold);
+    }
+
+    /* Settings layout */
+    .settings-layout {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+      max-width: 1000px;
+    }
+
+    .settings-nav {
+      display: none;
+    }
+
+    .settings-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Settings section card */
+    .settings-section {
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      margin-bottom: var(--space-6);
+    }
+
+    .settings-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .settings-section-header {
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .settings-section-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      color: var(--color-text);
+    }
+
+    .settings-section-body {
+      padding: var(--space-5);
+    }
+
+    /* Profile photo section */
+    .profile-photo-section {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding-bottom: var(--space-5);
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: var(--space-5);
+    }
+
+    .profile-photo-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .profile-photo-buttons {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .profile-photo-hint {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    /* Form layout */
+    .settings-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+
+    .settings-form-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-border);
+    }
+
+    /* Toggle item */
+    .toggle-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-4);
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .toggle-item:first-child {
+      padding-top: 0;
+    }
+
+    .toggle-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .toggle-content {
+      flex: 1;
+    }
+
+    .toggle-label {
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+    }
+
+    .toggle-description {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    /* Toggle group heading */
+    .toggle-group-heading {
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      padding-bottom: var(--space-3);
+      margin-bottom: var(--space-1);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .toggle-group-heading:not(:first-child) {
+      margin-top: var(--space-6);
+    }
+
+    /* Danger zone */
+    .danger-zone {
+      border-color: var(--color-error-200);
+      background-color: var(--color-error-50);
+    }
+
+    .danger-zone .settings-section-header {
+      border-color: var(--color-error-200);
+    }
+
+    .danger-zone .settings-section-title {
+      color: var(--color-error-700);
+    }
+
+    .danger-zone-text {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    /* Password strength meter */
+    .password-strength {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-2);
+    }
+
+    .password-strength-bar {
+      flex: 1;
+      height: 4px;
+      background-color: var(--color-gray-200);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .password-strength-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width var(--duration-200), background-color var(--duration-200);
+    }
+
+    .password-strength-fill.weak {
+      width: 25%;
+      background-color: var(--color-error);
+    }
+
+    .password-strength-fill.fair {
+      width: 50%;
+      background-color: var(--color-warning);
+    }
+
+    .password-strength-fill.good {
+      width: 75%;
+      background-color: var(--color-info);
+    }
+
+    .password-strength-fill.strong {
+      width: 100%;
+      background-color: var(--color-success);
+    }
+
+    .password-strength-label {
+      font-size: var(--text-xs);
+      font-weight: var(--font-medium);
+      min-width: 50px;
+    }
+
+    .password-strength-label.weak { color: var(--color-error); }
+    .password-strength-label.fair { color: var(--color-warning); }
+    .password-strength-label.good { color: var(--color-info); }
+    .password-strength-label.strong { color: var(--color-success); }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: var(--space-6);
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background-color: var(--color-gray-900);
+      color: var(--color-white);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+      box-shadow: var(--shadow-lg);
+      z-index: var(--z-toast);
+      opacity: 0;
+      transition: transform var(--duration-300) var(--ease-out), opacity var(--duration-300);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Mobile-only settings nav */
+    .settings-nav-mobile {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .settings-nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      cursor: pointer;
+      transition: background-color var(--duration-150);
+    }
+
+    .settings-nav-item:hover {
+      background-color: var(--color-surface-hover);
+    }
+
+    .settings-nav-item:last-child {
+      border-bottom: none;
+    }
+
+    .settings-nav-item-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--color-text-muted);
+    }
+
+    .settings-nav-item-text {
+      flex: 1;
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-text);
+    }
+
+    .settings-nav-item-arrow {
+      width: 16px;
+      height: 16px;
+      color: var(--color-text-muted);
+    }
+
+    .settings-nav-item.logout {
+      color: var(--color-error);
+    }
+
+    .settings-nav-item.logout .settings-nav-item-icon,
+    .settings-nav-item.logout .settings-nav-item-text {
+      color: var(--color-error);
+    }
+
+    /* Desktop settings nav */
+    @media (min-width: 768px) {
+      .settings-layout {
+        flex-direction: row;
+      }
+
+      .settings-nav {
+        display: block;
+        width: 200px;
+        flex-shrink: 0;
+      }
+
+      .settings-nav-mobile {
+        display: none;
+      }
+
+      .app-content {
+        padding: var(--space-8);
+      }
+    }
+
+    /* Mobile sidebar hidden */
+    @media (max-width: 767px) {
+      .sidebar {
+        display: none;
+      }
+
+      .app-content {
+        padding: var(--space-4);
+      }
+
+      .profile-photo-section {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .profile-photo-actions {
+        width: 100%;
+      }
+
+      .profile-photo-buttons {
+        flex-wrap: wrap;
+      }
+    }
+
+    /* Mobile bottom nav */
+    .mobile-nav {
+      display: flex;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      padding: var(--space-2) 0;
+      padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
+      z-index: var(--z-fixed);
+    }
+
+    .mobile-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-2);
+      color: var(--color-text-muted);
+      font-size: var(--text-xs);
+      text-decoration: none;
+      transition: color var(--duration-150);
+    }
+
+    .mobile-nav-item.active {
+      color: var(--color-primary);
+    }
+
+    .mobile-nav-item svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    @media (min-width: 768px) {
+      .mobile-nav {
+        display: none;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .app-content {
+        padding-bottom: calc(var(--space-20) + env(safe-area-inset-bottom, 0px));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="app-shell">
+      <!-- Sidebar (Desktop only) -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <span class="text-lg font-semibold">TaskFlow</span>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="sidebar-section">
+            <div class="nav nav-vertical">
+              <a href="002-dashboard.html" class="nav-item">
+                <i data-lucide="home" class="nav-item-icon"></i>
+                Dashboard
+              </a>
+              <a href="003-projects.html" class="nav-item">
+                <i data-lucide="folder" class="nav-item-icon"></i>
+                Projects
+              </a>
+            </div>
+          </div>
+        </nav>
+        <div class="sidebar-footer">
+          <a href="#" class="nav-item active">
+            <i data-lucide="settings" class="nav-item-icon"></i>
+            Settings
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="app-content">
+        <header class="page-header">
+          <h1 class="page-title">Settings</h1>
+        </header>
+
+        <div class="settings-layout">
+          <!-- Desktop Settings Nav -->
+          <nav class="settings-nav">
+            <div class="nav nav-vertical">
+              <a
+                href="#"
+                :class="['nav-item', { active: activeSection === 'profile' }]"
+                @click.prevent="activeSection = 'profile'"
+              >
+                <i data-lucide="user" class="nav-item-icon"></i>
+                Profile
+              </a>
+              <a
+                href="#"
+                :class="['nav-item', { active: activeSection === 'notifications' }]"
+                @click.prevent="activeSection = 'notifications'"
+              >
+                <i data-lucide="bell" class="nav-item-icon"></i>
+                Notifications
+              </a>
+              <a
+                href="#"
+                :class="['nav-item', { active: activeSection === 'account' }]"
+                @click.prevent="activeSection = 'account'"
+              >
+                <i data-lucide="shield" class="nav-item-icon"></i>
+                Account
+              </a>
+            </div>
+          </nav>
+
+          <div class="settings-content">
+            <!-- Mobile Settings Nav (when no section selected) -->
+            <div v-if="!activeSection" class="settings-nav-mobile card">
+              <div
+                class="settings-nav-item"
+                @click="activeSection = 'profile'"
+              >
+                <i data-lucide="user" class="settings-nav-item-icon"></i>
+                <span class="settings-nav-item-text">Profile</span>
+                <i data-lucide="chevron-right" class="settings-nav-item-arrow"></i>
+              </div>
+              <div
+                class="settings-nav-item"
+                @click="activeSection = 'notifications'"
+              >
+                <i data-lucide="bell" class="settings-nav-item-icon"></i>
+                <span class="settings-nav-item-text">Notifications</span>
+                <i data-lucide="chevron-right" class="settings-nav-item-arrow"></i>
+              </div>
+              <div
+                class="settings-nav-item"
+                @click="activeSection = 'account'"
+              >
+                <i data-lucide="shield" class="settings-nav-item-icon"></i>
+                <span class="settings-nav-item-text">Account</span>
+                <i data-lucide="chevron-right" class="settings-nav-item-arrow"></i>
+              </div>
+              <div class="divider m-0"></div>
+              <div class="settings-nav-item logout" @click="logout">
+                <i data-lucide="log-out" class="settings-nav-item-icon"></i>
+                <span class="settings-nav-item-text">Log Out</span>
+              </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div v-if="activeSection === 'profile'" class="settings-section">
+              <div class="settings-section-header">
+                <h2 class="settings-section-title">Profile</h2>
+              </div>
+              <div class="settings-section-body">
+                <div class="profile-photo-section">
+                  <div class="avatar avatar-xl">{{ profile.initials }}</div>
+                  <div class="profile-photo-actions">
+                    <div class="profile-photo-buttons">
+                      <button class="btn btn-secondary btn-sm">
+                        <i data-lucide="upload"></i>
+                        Upload Photo
+                      </button>
+                      <button class="btn btn-ghost btn-sm">Remove</button>
+                    </div>
+                    <span class="profile-photo-hint">JPG, PNG, or GIF. Max 2MB.</span>
+                  </div>
+                </div>
+
+                <form @submit.prevent="saveProfile" class="settings-form">
+                  <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input
+                      type="text"
+                      class="input"
+                      v-model="profile.name"
+                      placeholder="Your name"
+                    >
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input
+                      type="email"
+                      class="input"
+                      v-model="profile.email"
+                      placeholder="your@email.com"
+                    >
+                    <span class="form-hint">This is the email you use to log in.</span>
+                  </div>
+
+                  <div class="settings-form-footer">
+                    <button type="submit" class="btn btn-primary" :disabled="saving">
+                      {{ saving ? 'Saving...' : 'Save Changes' }}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Notifications Section -->
+            <div v-if="activeSection === 'notifications'" class="settings-section">
+              <div class="settings-section-header">
+                <h2 class="settings-section-title">Notifications</h2>
+              </div>
+              <div class="settings-section-body">
+                <div class="toggle-group-heading">In-App Notifications</div>
+
+                <div class="toggle-item">
+                  <div class="toggle-content">
+                    <div class="toggle-label">Task reminders</div>
+                    <div class="toggle-description">Get notified when tasks are due or overdue</div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    class="toggle"
+                    v-model="preferences.taskReminders"
+                    @change="savePreference('taskReminders')"
+                  >
+                </div>
+
+                <div class="toggle-item">
+                  <div class="toggle-content">
+                    <div class="toggle-label">Task assignments</div>
+                    <div class="toggle-description">Get notified when you're assigned to a task</div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    class="toggle"
+                    v-model="preferences.taskAssignments"
+                    @change="savePreference('taskAssignments')"
+                  >
+                </div>
+
+                <div class="toggle-item">
+                  <div class="toggle-content">
+                    <div class="toggle-label">Team activity</div>
+                    <div class="toggle-description">Get notified when team members join or leave projects</div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    class="toggle"
+                    v-model="preferences.teamActivity"
+                    @change="savePreference('teamActivity')"
+                  >
+                </div>
+
+                <div class="toggle-item">
+                  <div class="toggle-content">
+                    <div class="toggle-label">Task completions</div>
+                    <div class="toggle-description">Get notified when tasks you created are completed</div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    class="toggle"
+                    v-model="preferences.taskCompletions"
+                    @change="savePreference('taskCompletions')"
+                  >
+                </div>
+
+                <div class="toggle-group-heading">Push Notifications</div>
+
+                <div class="toggle-item">
+                  <div class="toggle-content">
+                    <div class="toggle-label">Enable push notifications</div>
+                    <div class="toggle-description">Receive notifications even when TaskFlow is closed</div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    class="toggle"
+                    v-model="preferences.pushEnabled"
+                    @change="togglePushNotifications"
+                  >
+                </div>
+
+                <div class="toggle-group-heading">Email Notifications</div>
+
+                <div class="toggle-item">
+                  <div class="toggle-content">
+                    <div class="toggle-label">Weekly digest</div>
+                    <div class="toggle-description">Receive a weekly summary of your tasks and activity</div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    class="toggle"
+                    v-model="preferences.weeklyDigest"
+                    @change="savePreference('weeklyDigest')"
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Account Section -->
+            <div v-if="activeSection === 'account'">
+              <div class="settings-section">
+                <div class="settings-section-header">
+                  <h2 class="settings-section-title">Change Password</h2>
+                </div>
+                <div class="settings-section-body">
+                  <form @submit.prevent="updatePassword" class="settings-form">
+                    <div class="form-group">
+                      <label class="form-label">Current Password</label>
+                      <input
+                        type="password"
+                        class="input"
+                        v-model="passwords.current"
+                        placeholder="Enter current password"
+                      >
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">New Password</label>
+                      <input
+                        type="password"
+                        class="input"
+                        v-model="passwords.new"
+                        placeholder="Enter new password"
+                        @input="checkPasswordStrength"
+                      >
+                      <div v-if="passwords.new" class="password-strength">
+                        <div class="password-strength-bar">
+                          <div :class="['password-strength-fill', passwordStrength.level]"></div>
+                        </div>
+                        <span :class="['password-strength-label', passwordStrength.level]">
+                          {{ passwordStrength.label }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">Confirm New Password</label>
+                      <input
+                        type="password"
+                        :class="['input', { 'input-error': passwords.confirm && passwords.new !== passwords.confirm }]"
+                        v-model="passwords.confirm"
+                        placeholder="Confirm new password"
+                      >
+                      <span v-if="passwords.confirm && passwords.new !== passwords.confirm" class="form-error">
+                        Passwords don't match
+                      </span>
+                    </div>
+
+                    <div class="settings-form-footer">
+                      <button
+                        type="submit"
+                        class="btn btn-primary"
+                        :disabled="!canUpdatePassword"
+                      >
+                        Update Password
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="settings-section danger-zone">
+                <div class="settings-section-header">
+                  <h2 class="settings-section-title">Danger Zone</h2>
+                </div>
+                <div class="settings-section-body">
+                  <p class="danger-zone-text">
+                    Once you delete your account, there is no going back. All your projects and tasks will be permanently deleted.
+                  </p>
+                  <button class="btn btn-danger" @click="showDeleteModal = true">
+                    Delete Account
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="mobile-nav">
+      <a href="002-dashboard.html" class="mobile-nav-item">
+        <i data-lucide="home"></i>
+        <span>Home</span>
+      </a>
+      <a href="003-projects.html" class="mobile-nav-item">
+        <i data-lucide="folder"></i>
+        <span>Projects</span>
+      </a>
+      <a href="#" class="mobile-nav-item">
+        <i data-lucide="plus-circle"></i>
+        <span>Add</span>
+      </a>
+      <a href="#" class="mobile-nav-item">
+        <i data-lucide="bell"></i>
+        <span>Alerts</span>
+      </a>
+      <a href="#" class="mobile-nav-item active">
+        <i data-lucide="settings"></i>
+        <span>Settings</span>
+      </a>
+    </nav>
+
+    <!-- Delete Account Modal -->
+    <div :class="['modal-backdrop', { open: showDeleteModal }]" @click.self="showDeleteModal = false">
+      <div class="modal modal-sm">
+        <div class="modal-header">
+          <h2 class="modal-title">Delete Account</h2>
+          <button class="modal-close" @click="showDeleteModal = false">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="text-sm text-secondary" style="margin-bottom: var(--space-4);">
+            This action cannot be undone. All your projects, tasks, and data will be permanently deleted.
+          </p>
+          <div class="form-group">
+            <label class="form-label">Type DELETE to confirm</label>
+            <input
+              type="text"
+              class="input"
+              v-model="deleteConfirmText"
+              placeholder="DELETE"
+            >
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" @click="showDeleteModal = false">Cancel</button>
+          <button
+            class="btn btn-danger"
+            :disabled="deleteConfirmText !== 'DELETE'"
+            @click="deleteAccount"
+          >
+            Delete Account
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div :class="['toast', { show: toast.show }]">{{ toast.message }}</div>
+  </div>
+
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <script>
+    const { createApp, ref, computed, onMounted, nextTick, watch } = Vue;
+
+    createApp({
+      setup() {
+        // Active section (for navigation)
+        const activeSection = ref('profile');
+
+        // Check viewport for mobile default
+        const isMobile = window.innerWidth < 768;
+        if (isMobile) {
+          activeSection.value = null;
+        }
+
+        // Profile data
+        const profile = ref({
+          name: 'Alice Johnson',
+          email: 'alice@taskflow.app',
+          initials: 'AJ'
+        });
+
+        // Notification preferences
+        const preferences = ref({
+          taskReminders: true,
+          taskAssignments: true,
+          teamActivity: true,
+          taskCompletions: false,
+          pushEnabled: false,
+          weeklyDigest: true
+        });
+
+        // Password fields
+        const passwords = ref({
+          current: '',
+          new: '',
+          confirm: ''
+        });
+
+        // Password strength
+        const passwordStrength = ref({
+          level: '',
+          label: ''
+        });
+
+        // Saving state
+        const saving = ref(false);
+
+        // Toast
+        const toast = ref({
+          show: false,
+          message: ''
+        });
+
+        // Delete modal
+        const showDeleteModal = ref(false);
+        const deleteConfirmText = ref('');
+
+        // Check password strength
+        const checkPasswordStrength = () => {
+          const password = passwords.value.new;
+          let score = 0;
+
+          if (password.length >= 8) score++;
+          if (password.length >= 12) score++;
+          if (/[A-Z]/.test(password)) score++;
+          if (/[0-9]/.test(password)) score++;
+          if (/[^A-Za-z0-9]/.test(password)) score++;
+
+          if (score <= 1) {
+            passwordStrength.value = { level: 'weak', label: 'Weak' };
+          } else if (score <= 2) {
+            passwordStrength.value = { level: 'fair', label: 'Fair' };
+          } else if (score <= 3) {
+            passwordStrength.value = { level: 'good', label: 'Good' };
+          } else {
+            passwordStrength.value = { level: 'strong', label: 'Strong' };
+          }
+        };
+
+        // Can update password
+        const canUpdatePassword = computed(() => {
+          return passwords.value.current &&
+                 passwords.value.new &&
+                 passwords.value.new.length >= 8 &&
+                 passwords.value.new === passwords.value.confirm;
+        });
+
+        // Show toast
+        const showToast = (message) => {
+          toast.value.message = message;
+          toast.value.show = true;
+          setTimeout(() => {
+            toast.value.show = false;
+          }, 3000);
+        };
+
+        // Save profile
+        const saveProfile = () => {
+          saving.value = true;
+          setTimeout(() => {
+            saving.value = false;
+            showToast('Profile saved');
+          }, 1000);
+        };
+
+        // Save preference (toggles save immediately)
+        const savePreference = (prefName) => {
+          showToast('Preference saved');
+        };
+
+        // Toggle push notifications
+        const togglePushNotifications = () => {
+          if (preferences.value.pushEnabled) {
+            // Would request browser permission here
+            showToast('Push notifications enabled');
+          } else {
+            showToast('Push notifications disabled');
+          }
+        };
+
+        // Update password
+        const updatePassword = () => {
+          if (!canUpdatePassword.value) return;
+
+          saving.value = true;
+          setTimeout(() => {
+            saving.value = false;
+            passwords.value = { current: '', new: '', confirm: '' };
+            passwordStrength.value = { level: '', label: '' };
+            showToast('Password updated');
+          }, 1000);
+        };
+
+        // Delete account
+        const deleteAccount = () => {
+          if (deleteConfirmText.value !== 'DELETE') return;
+
+          showToast('Account deleted');
+          setTimeout(() => {
+            window.location.href = '001-landing.html';
+          }, 1500);
+        };
+
+        // Logout
+        const logout = () => {
+          window.location.href = '001-landing.html';
+        };
+
+        // Watch active section for icon refresh
+        watch(activeSection, () => {
+          nextTick(() => {
+            lucide.createIcons();
+          });
+        });
+
+        onMounted(() => {
+          lucide.createIcons();
+        });
+
+        return {
+          activeSection,
+          profile,
+          preferences,
+          passwords,
+          passwordStrength,
+          saving,
+          toast,
+          showDeleteModal,
+          deleteConfirmText,
+          canUpdatePassword,
+          checkPasswordStrength,
+          saveProfile,
+          savePreference,
+          togglePushNotifications,
+          updatePassword,
+          deleteAccount,
+          logout
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

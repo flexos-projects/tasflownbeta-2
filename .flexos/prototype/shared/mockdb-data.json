@@ -1,0 +1,457 @@
+{
+  "currentUser": {
+    "id": "user-1",
+    "email": "alice@taskflow.app",
+    "name": "Alice Johnson",
+    "avatar_url": null,
+    "role": "owner",
+    "onboarding_completed": true,
+    "created_at": "2024-12-01T10:00:00Z",
+    "preferences": {
+      "theme": "light",
+      "email_notifications": true,
+      "push_notifications": false,
+      "weekly_digest": true
+    }
+  },
+
+  "users": [
+    {
+      "id": "user-1",
+      "email": "alice@taskflow.app",
+      "name": "Alice Johnson",
+      "avatar_url": null,
+      "role": "owner",
+      "onboarding_completed": true,
+      "created_at": "2024-12-01T10:00:00Z"
+    },
+    {
+      "id": "user-2",
+      "email": "bob@example.com",
+      "name": "Bob Smith",
+      "avatar_url": null,
+      "role": "member",
+      "onboarding_completed": true,
+      "created_at": "2024-12-15T14:30:00Z"
+    },
+    {
+      "id": "user-3",
+      "email": "carol@design.co",
+      "name": "Carol Williams",
+      "avatar_url": null,
+      "role": "member",
+      "onboarding_completed": false,
+      "created_at": "2025-01-10T09:00:00Z"
+    }
+  ],
+
+  "projects": [
+    {
+      "id": "proj-1",
+      "owner_id": "user-1",
+      "name": "Website Redesign",
+      "description": "Complete overhaul of company website with new branding, improved UX, and mobile-first approach",
+      "color": "#3b82f6",
+      "icon": "globe",
+      "archived_at": null,
+      "created_at": "2024-12-01T10:30:00Z",
+      "updated_at": "2025-01-14T08:00:00Z",
+      "task_count": 8,
+      "completed_count": 3
+    },
+    {
+      "id": "proj-2",
+      "owner_id": "user-1",
+      "name": "Mobile App v2",
+      "description": "iOS and Android app with offline support and push notifications",
+      "color": "#22c55e",
+      "icon": "smartphone",
+      "archived_at": null,
+      "created_at": "2024-12-10T11:00:00Z",
+      "updated_at": "2025-01-13T16:45:00Z",
+      "task_count": 12,
+      "completed_count": 5
+    },
+    {
+      "id": "proj-3",
+      "owner_id": "user-1",
+      "name": "Q1 2025 Planning",
+      "description": "Quarterly planning, OKRs, and team goals",
+      "color": "#f59e0b",
+      "icon": "calendar",
+      "archived_at": null,
+      "created_at": "2025-01-02T09:00:00Z",
+      "updated_at": "2025-01-12T14:20:00Z",
+      "task_count": 6,
+      "completed_count": 2
+    },
+    {
+      "id": "proj-4",
+      "owner_id": "user-1",
+      "name": "Customer Research",
+      "description": "User interviews, surveys, and feedback analysis",
+      "color": "#8b5cf6",
+      "icon": "users",
+      "archived_at": "2024-11-30T18:00:00Z",
+      "created_at": "2024-10-15T10:00:00Z",
+      "updated_at": "2024-11-30T18:00:00Z",
+      "task_count": 4,
+      "completed_count": 4
+    }
+  ],
+
+  "tasks": [
+    {
+      "id": "task-1",
+      "project_id": "proj-1",
+      "created_by": "user-1",
+      "assigned_to": "user-1",
+      "title": "Design homepage mockup",
+      "description": "Create high-fidelity mockup for the new homepage including hero section, features grid, and testimonials",
+      "done": true,
+      "done_at": "2025-01-08T14:30:00Z",
+      "due_date": "2025-01-10",
+      "priority": "high",
+      "position": 0,
+      "tags": ["design", "homepage"],
+      "created_at": "2024-12-01T10:35:00Z"
+    },
+    {
+      "id": "task-2",
+      "project_id": "proj-1",
+      "created_by": "user-1",
+      "assigned_to": "user-2",
+      "title": "Review mockup with stakeholders",
+      "description": "Schedule and run review meeting with marketing and product teams",
+      "done": false,
+      "done_at": null,
+      "due_date": "2025-01-15",
+      "priority": "high",
+      "position": 1,
+      "tags": ["review", "meeting"],
+      "created_at": "2024-12-05T09:00:00Z"
+    },
+    {
+      "id": "task-3",
+      "project_id": "proj-1",
+      "created_by": "user-1",
+      "assigned_to": "user-1",
+      "title": "Implement header component",
+      "description": "Build responsive header with navigation, logo, and mobile menu",
+      "done": false,
+      "done_at": null,
+      "due_date": "2025-01-14",
+      "priority": "medium",
+      "position": 2,
+      "tags": ["dev", "component"],
+      "created_at": "2025-01-02T11:00:00Z"
+    },
+    {
+      "id": "task-4",
+      "project_id": "proj-1",
+      "created_by": "user-2",
+      "assigned_to": "user-2",
+      "title": "Write homepage copy",
+      "description": "Draft compelling copy for hero, features, and CTA sections",
+      "done": true,
+      "done_at": "2025-01-06T16:00:00Z",
+      "due_date": "2025-01-08",
+      "priority": "medium",
+      "position": 3,
+      "tags": ["content", "copywriting"],
+      "created_at": "2024-12-20T10:00:00Z"
+    },
+    {
+      "id": "task-5",
+      "project_id": "proj-1",
+      "created_by": "user-1",
+      "assigned_to": null,
+      "title": "Set up analytics tracking",
+      "description": "Implement Google Analytics 4 and custom event tracking",
+      "done": false,
+      "done_at": null,
+      "due_date": "2025-01-20",
+      "priority": "low",
+      "position": 4,
+      "tags": ["analytics", "tracking"],
+      "created_at": "2025-01-05T14:00:00Z"
+    },
+    {
+      "id": "task-6",
+      "project_id": "proj-2",
+      "created_by": "user-1",
+      "assigned_to": "user-1",
+      "title": "Set up React Native project",
+      "description": "Initialize RN project with TypeScript, navigation, and base dependencies",
+      "done": true,
+      "done_at": "2024-12-12T17:00:00Z",
+      "due_date": null,
+      "priority": "high",
+      "position": 0,
+      "tags": ["setup", "mobile"],
+      "created_at": "2024-12-10T11:30:00Z"
+    },
+    {
+      "id": "task-7",
+      "project_id": "proj-2",
+      "created_by": "user-1",
+      "assigned_to": "user-3",
+      "title": "Design app icon and splash screen",
+      "description": "Create app icon in all required sizes and animated splash screen",
+      "done": false,
+      "done_at": null,
+      "due_date": "2025-01-12",
+      "priority": "medium",
+      "position": 1,
+      "tags": ["design", "branding"],
+      "created_at": "2024-12-15T10:00:00Z"
+    },
+    {
+      "id": "task-8",
+      "project_id": "proj-2",
+      "created_by": "user-1",
+      "assigned_to": "user-1",
+      "title": "Implement offline data sync",
+      "description": "Use WatermelonDB for offline-first data with background sync",
+      "done": false,
+      "done_at": null,
+      "due_date": "2025-01-25",
+      "priority": "high",
+      "position": 2,
+      "tags": ["dev", "offline", "sync"],
+      "created_at": "2025-01-03T09:00:00Z"
+    },
+    {
+      "id": "task-9",
+      "project_id": "proj-3",
+      "created_by": "user-1",
+      "assigned_to": "user-1",
+      "title": "Draft Q1 OKRs",
+      "description": "Create initial draft of team objectives and key results for Q1",
+      "done": true,
+      "done_at": "2025-01-05T11:00:00Z",
+      "due_date": "2025-01-05",
+      "priority": "high",
+      "position": 0,
+      "tags": ["planning", "okr"],
+      "created_at": "2025-01-02T09:30:00Z"
+    },
+    {
+      "id": "task-10",
+      "project_id": "proj-3",
+      "created_by": "user-1",
+      "assigned_to": "user-2",
+      "title": "Schedule team planning meeting",
+      "description": "Find time slot that works for all team members for Q1 kickoff",
+      "done": true,
+      "done_at": "2025-01-03T15:00:00Z",
+      "due_date": "2025-01-04",
+      "priority": "medium",
+      "position": 1,
+      "tags": ["meeting", "scheduling"],
+      "created_at": "2025-01-02T10:00:00Z"
+    },
+    {
+      "id": "task-11",
+      "project_id": "proj-3",
+      "created_by": "user-1",
+      "assigned_to": null,
+      "title": "Review budget allocation",
+      "description": "Analyze Q4 spending and propose Q1 budget distribution",
+      "done": false,
+      "done_at": null,
+      "due_date": "2025-01-18",
+      "priority": "medium",
+      "position": 2,
+      "tags": ["finance", "planning"],
+      "created_at": "2025-01-08T14:00:00Z"
+    }
+  ],
+
+  "teamMembers": [
+    {
+      "id": "tm-1",
+      "project_id": "proj-1",
+      "user_id": "user-1",
+      "role": "owner",
+      "joined_at": "2024-12-01T10:30:00Z"
+    },
+    {
+      "id": "tm-2",
+      "project_id": "proj-1",
+      "user_id": "user-2",
+      "role": "member",
+      "joined_at": "2024-12-15T14:30:00Z"
+    },
+    {
+      "id": "tm-3",
+      "project_id": "proj-2",
+      "user_id": "user-1",
+      "role": "owner",
+      "joined_at": "2024-12-10T11:00:00Z"
+    },
+    {
+      "id": "tm-4",
+      "project_id": "proj-2",
+      "user_id": "user-3",
+      "role": "member",
+      "joined_at": "2025-01-10T09:00:00Z"
+    },
+    {
+      "id": "tm-5",
+      "project_id": "proj-3",
+      "user_id": "user-1",
+      "role": "owner",
+      "joined_at": "2025-01-02T09:00:00Z"
+    },
+    {
+      "id": "tm-6",
+      "project_id": "proj-3",
+      "user_id": "user-2",
+      "role": "member",
+      "joined_at": "2025-01-02T09:15:00Z"
+    }
+  ],
+
+  "invitations": [
+    {
+      "id": "inv-1",
+      "project_id": "proj-1",
+      "email": "david@agency.io",
+      "role": "member",
+      "invited_by": "user-1",
+      "status": "pending",
+      "created_at": "2025-01-12T10:00:00Z",
+      "expires_at": "2025-01-19T10:00:00Z"
+    }
+  ],
+
+  "notifications": [
+    {
+      "id": "notif-1",
+      "user_id": "user-1",
+      "type": "task_due",
+      "title": "Task due tomorrow",
+      "body": "\"Review mockup with stakeholders\" is due tomorrow",
+      "data": {
+        "task_id": "task-2",
+        "project_id": "proj-1"
+      },
+      "read_at": null,
+      "created_at": "2025-01-14T08:00:00Z"
+    },
+    {
+      "id": "notif-2",
+      "user_id": "user-1",
+      "type": "task_overdue",
+      "title": "Task overdue",
+      "body": "\"Design app icon and splash screen\" was due 2 days ago",
+      "data": {
+        "task_id": "task-7",
+        "project_id": "proj-2"
+      },
+      "read_at": null,
+      "created_at": "2025-01-14T08:00:00Z"
+    },
+    {
+      "id": "notif-3",
+      "user_id": "user-1",
+      "type": "member_joined",
+      "title": "Carol joined Mobile App v2",
+      "body": "Carol Williams accepted your invitation",
+      "data": {
+        "user_id": "user-3",
+        "project_id": "proj-2"
+      },
+      "read_at": "2025-01-10T10:30:00Z",
+      "created_at": "2025-01-10T09:00:00Z"
+    },
+    {
+      "id": "notif-4",
+      "user_id": "user-1",
+      "type": "task_completed",
+      "title": "Task completed",
+      "body": "Bob marked \"Write homepage copy\" as complete",
+      "data": {
+        "task_id": "task-4",
+        "project_id": "proj-1",
+        "completed_by": "user-2"
+      },
+      "read_at": "2025-01-06T17:00:00Z",
+      "created_at": "2025-01-06T16:00:00Z"
+    },
+    {
+      "id": "notif-5",
+      "user_id": "user-1",
+      "type": "weekly_digest",
+      "title": "Your weekly summary",
+      "body": "You completed 5 tasks this week across 3 projects",
+      "data": {
+        "tasks_completed": 5,
+        "projects_active": 3
+      },
+      "read_at": "2025-01-13T09:00:00Z",
+      "created_at": "2025-01-13T08:00:00Z"
+    }
+  ],
+
+  "activityLog": [
+    {
+      "id": "act-1",
+      "user_id": "user-1",
+      "action": "task.completed",
+      "target_type": "task",
+      "target_id": "task-1",
+      "metadata": {
+        "task_title": "Design homepage mockup",
+        "project_id": "proj-1"
+      },
+      "created_at": "2025-01-08T14:30:00Z"
+    },
+    {
+      "id": "act-2",
+      "user_id": "user-2",
+      "action": "task.completed",
+      "target_type": "task",
+      "target_id": "task-4",
+      "metadata": {
+        "task_title": "Write homepage copy",
+        "project_id": "proj-1"
+      },
+      "created_at": "2025-01-06T16:00:00Z"
+    },
+    {
+      "id": "act-3",
+      "user_id": "user-1",
+      "action": "project.created",
+      "target_type": "project",
+      "target_id": "proj-3",
+      "metadata": {
+        "project_name": "Q1 2025 Planning"
+      },
+      "created_at": "2025-01-02T09:00:00Z"
+    },
+    {
+      "id": "act-4",
+      "user_id": "user-3",
+      "action": "member.joined",
+      "target_type": "project",
+      "target_id": "proj-2",
+      "metadata": {
+        "project_name": "Mobile App v2"
+      },
+      "created_at": "2025-01-10T09:00:00Z"
+    }
+  ],
+
+  "stats": {
+    "totalProjects": 3,
+    "archivedProjects": 1,
+    "totalTasks": 11,
+    "completedTasks": 5,
+    "overdueTasks": 1,
+    "dueTodayTasks": 1,
+    "dueThisWeekTasks": 3,
+    "teamMembers": 3
+  }
+}

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Onboarding - TaskFlow</title>
+  <meta name="description" content="Set up your TaskFlow account in just a few steps.">
+
+  <!-- Design Tokens & Components -->
+  <link rel="stylesheet" href="shared/tokens.css">
+  <link rel="stylesheet" href="shared/components.css">
+
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    /* Onboarding Page Layout */
+    .onboarding-page {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+      background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+    }
+
+    /* Logo */
+    .onboarding-logo {
+      margin-bottom: var(--space-8);
+      text-decoration: none;
+      color: var(--color-gray-900);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .onboarding-logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--color-primary);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .onboarding-logo-text {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+    }
+
+    /* Onboarding Card */
+    .onboarding-card {
+      width: 100%;
+      max-width: 480px;
+      background: white;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      padding: var(--space-8);
+    }
+
+    /* Progress Indicator */
+    .onboarding-progress {
+      display: flex;
+      gap: var(--space-2);
+      margin-bottom: var(--space-8);
+    }
+
+    .progress-step {
+      flex: 1;
+      height: 4px;
+      background: var(--color-gray-200);
+      border-radius: var(--radius-full);
+      transition: background-color var(--duration-300) var(--ease-out);
+    }
+
+    .progress-step.active,
+    .progress-step.completed {
+      background: var(--color-primary);
+    }
+
+    /* Step Counter */
+    .step-counter {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-2);
+    }
+
+    /* Content Area */
+    .onboarding-content {
+      margin-bottom: var(--space-8);
+    }
+
+    .onboarding-icon {
+      display: flex;
+      justify-content: center;
+      margin-bottom: var(--space-4);
+    }
+
+    .onboarding-icon-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      animation: wave 1s ease-in-out;
+    }
+
+    .onboarding-icon-circle.primary {
+      background: var(--color-primary-100);
+    }
+
+    .onboarding-icon-circle.success {
+      background: var(--color-success-100);
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(15deg); }
+      75% { transform: rotate(-15deg); }
+    }
+
+    @keyframes celebrate {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .onboarding-icon-circle.celebrate {
+      animation: celebrate 0.5s ease-in-out;
+    }
+
+    .onboarding-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-semibold);
+      color: var(--color-gray-900);
+      text-align: center;
+      margin: 0;
+    }
+
+    .onboarding-description {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-2);
+      line-height: var(--leading-relaxed);
+    }
+
+    /* Avatar Upload */
+    .avatar-upload {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .avatar-preview {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: var(--color-gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-3xl);
+      color: var(--color-gray-400);
+      overflow: hidden;
+      border: 2px dashed var(--color-gray-300);
+    }
+
+    .avatar-preview.has-image {
+      border-style: solid;
+      border-color: var(--color-primary);
+    }
+
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-upload-btn {
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+      cursor: pointer;
+    }
+
+    .avatar-upload-btn:hover {
+      text-decoration: underline;
+    }
+
+    .avatar-hint {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    /* Color Picker */
+    .color-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-top: var(--space-2);
+    }
+
+    .color-option {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: transform var(--duration-150) var(--ease-out),
+                  border-color var(--duration-150) var(--ease-out);
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    .color-option.selected {
+      border-color: var(--color-gray-900);
+    }
+
+    .color-option:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    /* Actions */
+    .onboarding-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .skip-btn {
+      background: none;
+      border: none;
+      color: var(--color-text-muted);
+      font-size: var(--text-sm);
+      cursor: pointer;
+      padding: var(--space-2);
+      transition: color var(--duration-150);
+    }
+
+    .skip-btn:hover {
+      color: var(--color-text);
+    }
+
+    /* Countdown */
+    .countdown {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      text-align: center;
+      margin-top: var(--space-4);
+    }
+
+    /* Confetti (simple CSS version) */
+    .confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 100;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      opacity: 0;
+    }
+
+    .confetti.active .confetti-piece {
+      animation: confetti-fall 3s ease-out forwards;
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        opacity: 1;
+        transform: translateY(-100px) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(720deg);
+      }
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 480px) {
+      .onboarding-card {
+        padding: var(--space-6);
+        border-radius: var(--radius-lg);
+      }
+
+      .onboarding-title {
+        font-size: var(--text-xl);
+      }
+
+      .onboarding-icon-circle {
+        width: 64px;
+        height: 64px;
+        font-size: 32px;
+      }
+
+      .avatar-preview {
+        width: 80px;
+        height: 80px;
+      }
+
+      .color-option {
+        width: 36px;
+        height: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app">
+    <div class="onboarding-page">
+      <!-- Logo -->
+      <a href="001-landing.html" class="onboarding-logo">
+        <div class="onboarding-logo-icon">
+          <i data-lucide="check-square" style="width: 18px; height: 18px;"></i>
+        </div>
+        <span class="onboarding-logo-text">TaskFlow</span>
+      </a>
+
+      <!-- Onboarding Card -->
+      <div class="onboarding-card">
+        <!-- Step Counter -->
+        <div class="step-counter" v-if="currentStep < 4">
+          Step {{ currentStep }} of 3
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="onboarding-progress">
+          <div
+            v-for="step in 4"
+            :key="step"
+            class="progress-step"
+            :class="{
+              'completed': step < currentStep,
+              'active': step === currentStep
+            }"
+          ></div>
+        </div>
+
+        <!-- Step 1: Welcome -->
+        <div v-if="currentStep === 1">
+          <div class="onboarding-content">
+            <div class="onboarding-icon">
+              <div class="onboarding-icon-circle primary">
+                👋
+              </div>
+            </div>
+            <h1 class="onboarding-title">Welcome to TaskFlow!</h1>
+            <p class="onboarding-description">
+              Let's set up your account. This will only take a minute.
+            </p>
+          </div>
+
+          <div class="onboarding-actions">
+            <button
+              class="btn btn-primary btn-lg btn-block"
+              @click="nextStep"
+            >
+              Get Started
+            </button>
+            <button class="skip-btn" @click="skipOnboarding">
+              Skip for now →
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Profile -->
+        <div v-if="currentStep === 2">
+          <div class="onboarding-content">
+            <h1 class="onboarding-title">Tell us about yourself</h1>
+            <p class="onboarding-description">
+              What should we call you?
+            </p>
+
+            <!-- Avatar Upload -->
+            <div class="avatar-upload">
+              <div class="avatar-preview" :class="{ 'has-image': avatarUrl }">
+                <img v-if="avatarUrl" :src="avatarUrl" alt="Your avatar">
+                <i v-else data-lucide="user" style="width: 40px; height: 40px;"></i>
+              </div>
+              <label class="avatar-upload-btn">
+                {{ avatarUrl ? 'Change Photo' : 'Upload Photo' }}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/gif"
+                  @change="handleAvatarUpload"
+                  style="display: none;"
+                >
+              </label>
+              <span class="avatar-hint">(Optional)</span>
+            </div>
+
+            <!-- Name Input -->
+            <div class="form-group">
+              <label class="form-label" for="name">Your Name</label>
+              <input
+                type="text"
+                id="name"
+                class="input input-lg"
+                v-model="name"
+                placeholder="e.g., Alice Johnson"
+                autofocus
+                @keyup.enter="name.trim() && nextStep()"
+              >
+              <span class="form-hint">This is how you'll appear to your team.</span>
+            </div>
+          </div>
+
+          <div class="onboarding-actions">
+            <button
+              class="btn btn-primary btn-lg btn-block"
+              :disabled="!name.trim()"
+              @click="nextStep"
+            >
+              Continue
+            </button>
+            <button class="skip-btn" @click="prevStep">
+              ← Back
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: First Project -->
+        <div v-if="currentStep === 3">
+          <div class="onboarding-content">
+            <h1 class="onboarding-title">Create your first project</h1>
+            <p class="onboarding-description">
+              Projects help you organize related tasks. You can create more later.
+            </p>
+
+            <!-- Project Name Input -->
+            <div class="form-group" style="margin-top: var(--space-6);">
+              <label class="form-label" for="projectName">Project name</label>
+              <input
+                type="text"
+                id="projectName"
+                class="input input-lg"
+                v-model="projectName"
+                placeholder="e.g., Website Redesign"
+                autofocus
+                @keyup.enter="projectName.trim() && nextStep()"
+              >
+            </div>
+
+            <!-- Color Picker -->
+            <div class="form-group">
+              <label class="form-label">Pick a color</label>
+              <div class="color-picker">
+                <button
+                  v-for="color in projectColors"
+                  :key="color.value"
+                  type="button"
+                  class="color-option"
+                  :class="{ 'selected': projectColor === color.value }"
+                  :style="{ backgroundColor: color.value }"
+                  :title="color.name"
+                  :aria-label="color.name"
+                  @click="projectColor = color.value"
+                ></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="onboarding-actions">
+            <button
+              class="btn btn-primary btn-lg btn-block"
+              :disabled="!projectName.trim()"
+              @click="createProject"
+            >
+              Create Project
+            </button>
+            <div class="flex gap-4 justify-center">
+              <button class="skip-btn" @click="prevStep">
+                ← Back
+              </button>
+              <button class="skip-btn" @click="skipProject">
+                Skip →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Complete -->
+        <div v-if="currentStep === 4">
+          <div class="onboarding-content text-center">
+            <div class="onboarding-icon">
+              <div class="onboarding-icon-circle success celebrate">
+                🎉
+              </div>
+            </div>
+            <h1 class="onboarding-title">You're all set!</h1>
+            <p class="onboarding-description">
+              Your account is ready. Time to get things done.
+            </p>
+          </div>
+
+          <div class="onboarding-actions">
+            <button
+              class="btn btn-primary btn-lg btn-block"
+              @click="goToDashboard"
+            >
+              Go to Dashboard
+            </button>
+            <div class="countdown">
+              Redirecting in {{ countdown }}...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confetti -->
+      <div class="confetti" :class="{ 'active': showConfetti }">
+        <div
+          v-for="i in 50"
+          :key="i"
+          class="confetti-piece"
+          :style="{
+            left: Math.random() * 100 + '%',
+            backgroundColor: projectColors[Math.floor(Math.random() * projectColors.length)].value,
+            animationDelay: Math.random() * 0.5 + 's',
+            borderRadius: Math.random() > 0.5 ? '50%' : '0'
+          }"
+        ></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <script>
+    const { createApp, ref, onMounted, watch, nextTick } = Vue;
+
+    createApp({
+      setup() {
+        // Current step (1-4)
+        const currentStep = ref(1);
+
+        // Step 2: Profile
+        const name = ref('');
+        const avatarUrl = ref('');
+
+        // Step 3: Project
+        const projectName = ref('');
+        const projectColor = ref('#3b82f6');
+        const projectColors = [
+          { name: 'Blue', value: '#3b82f6' },
+          { name: 'Green', value: '#22c55e' },
+          { name: 'Amber', value: '#f59e0b' },
+          { name: 'Red', value: '#ef4444' },
+          { name: 'Purple', value: '#8b5cf6' },
+          { name: 'Pink', value: '#ec4899' },
+          { name: 'Cyan', value: '#06b6d4' },
+          { name: 'Indigo', value: '#6366f1' },
+          { name: 'Teal', value: '#14b8a6' },
+          { name: 'Orange', value: '#f97316' }
+        ];
+
+        // Step 4: Complete
+        const countdown = ref(3);
+        const showConfetti = ref(false);
+        let countdownInterval = null;
+
+        // Initialize
+        onMounted(() => {
+          lucide.createIcons();
+
+          // Check URL for step parameter
+          const params = new URLSearchParams(window.location.search);
+          const step = parseInt(params.get('step'));
+          if (step >= 1 && step <= 4) {
+            currentStep.value = step;
+          }
+        });
+
+        // Re-render icons when step changes
+        watch(currentStep, async () => {
+          await nextTick();
+          lucide.createIcons();
+
+          // Start countdown on step 4
+          if (currentStep.value === 4) {
+            showConfetti.value = true;
+            countdown.value = 3;
+            countdownInterval = setInterval(() => {
+              countdown.value--;
+              if (countdown.value <= 0) {
+                clearInterval(countdownInterval);
+                goToDashboard();
+              }
+            }, 1000);
+          }
+        });
+
+        // Navigation
+        const nextStep = () => {
+          if (currentStep.value < 4) {
+            currentStep.value++;
+          }
+        };
+
+        const prevStep = () => {
+          if (currentStep.value > 1) {
+            currentStep.value--;
+          }
+        };
+
+        const skipOnboarding = () => {
+          // Skip to dashboard without completing
+          window.location.href = '002-dashboard.html?onboarding=skipped';
+        };
+
+        const skipProject = () => {
+          // Skip project creation, go to complete
+          currentStep.value = 4;
+        };
+
+        // Avatar upload
+        const handleAvatarUpload = (event) => {
+          const file = event.target.files[0];
+          if (file) {
+            // Validate file size (2MB max)
+            if (file.size > 2 * 1024 * 1024) {
+              alert('Image must be less than 2MB');
+              return;
+            }
+
+            // Create preview URL
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              avatarUrl.value = e.target.result;
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+
+        // Create project
+        const createProject = async () => {
+          if (!projectName.value.trim()) return;
+
+          // Simulate saving
+          console.log('Creating project:', {
+            name: projectName.value,
+            color: projectColor.value
+          });
+
+          // Move to complete step
+          currentStep.value = 4;
+        };
+
+        // Go to dashboard
+        const goToDashboard = () => {
+          if (countdownInterval) {
+            clearInterval(countdownInterval);
+          }
+          window.location.href = '002-dashboard.html?onboarding=complete';
+        };
+
+        return {
+          currentStep,
+          name,
+          avatarUrl,
+          projectName,
+          projectColor,
+          projectColors,
+          countdown,
+          showConfetti,
+          nextStep,
+          prevStep,
+          skipOnboarding,
+          skipProject,
+          handleAvatarUpload,
+          createProject,
+          goToDashboard
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

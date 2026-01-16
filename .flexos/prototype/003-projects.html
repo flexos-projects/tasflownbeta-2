@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects - TaskFlow</title>
+
+  <!-- Design Tokens & Components -->
+  <link rel="stylesheet" href="shared/tokens.css">
+  <link rel="stylesheet" href="shared/components.css">
+
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    /* App Shell */
+    .app-shell {
+      display: flex;
+      min-height: 100dvh;
+    }
+
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-6);
+      background-color: var(--color-background);
+    }
+
+    /* Mobile header (shown on mobile only) */
+    .mobile-header {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4);
+      background-color: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+    }
+
+    .mobile-header-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+    }
+
+    .mobile-header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    /* Page Header */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .page-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-semibold);
+      color: var(--color-text);
+    }
+
+    .page-subtitle {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-top: var(--space-1);
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: inline-flex;
+      background-color: var(--color-gray-100);
+      padding: var(--space-1);
+      border-radius: var(--radius-lg);
+      gap: var(--space-1);
+      margin-bottom: var(--space-6);
+    }
+
+    .filter-tab {
+      padding: var(--space-2) var(--space-4);
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-text-secondary);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition-colors);
+    }
+
+    .filter-tab:hover {
+      color: var(--color-text);
+    }
+
+    .filter-tab.active {
+      background-color: var(--color-surface);
+      color: var(--color-text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Project Grid */
+    .project-grid {
+      display: grid;
+      gap: var(--space-4);
+      grid-template-columns: repeat(1, 1fr);
+    }
+
+    @media (min-width: 640px) {
+      .project-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .project-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* Project Card */
+    .project-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-5);
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-left: 4px solid var(--accent-color, var(--color-primary));
+      border-radius: var(--radius-xl);
+      cursor: pointer;
+      transition: border-color var(--duration-150), box-shadow var(--duration-150);
+    }
+
+    .project-card:hover {
+      border-color: var(--color-border-hover);
+      box-shadow: var(--shadow-md);
+    }
+
+    .project-card--archived {
+      opacity: 0.7;
+    }
+
+    .project-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .project-card-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--icon-bg, var(--color-primary-100));
+      border-radius: var(--radius-lg);
+      flex-shrink: 0;
+    }
+
+    .project-card-icon i {
+      width: 20px;
+      height: 20px;
+      color: var(--icon-color, var(--color-primary-600));
+    }
+
+    .project-card-actions {
+      opacity: 0;
+      transition: opacity var(--duration-150);
+    }
+
+    .project-card:hover .project-card-actions {
+      opacity: 1;
+    }
+
+    .project-card-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+    }
+
+    .project-card-description {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-4);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: calc(var(--text-sm) * 1.5 * 2);
+    }
+
+    .project-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      margin-top: auto;
+    }
+
+    .project-card-progress {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    .project-card-progress-bar {
+      width: 60px;
+      height: 4px;
+      background-color: var(--color-gray-200);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .project-card-progress-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width var(--duration-300);
+    }
+
+    .project-card-progress--complete .project-card-progress-fill {
+      background-color: var(--color-success);
+    }
+
+    .project-card-progress:not(.project-card-progress--complete) .project-card-progress-fill {
+      background-color: var(--color-primary);
+    }
+
+    .project-card-meta {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    .project-card-badge {
+      position: absolute;
+      top: var(--space-3);
+      right: var(--space-3);
+    }
+
+    /* Color Picker */
+    .color-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .color-option {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      transition: transform var(--duration-150);
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    .color-option.selected::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border: 2px solid var(--color-text);
+      border-radius: 50%;
+    }
+
+    .color-option.selected i {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 16px;
+      height: 16px;
+      color: white;
+    }
+
+    /* Icon Picker */
+    .icon-picker {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: var(--space-2);
+    }
+
+    .icon-option {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: var(--transition-colors);
+    }
+
+    .icon-option:hover {
+      background-color: var(--color-surface-hover);
+      border-color: var(--color-border-hover);
+    }
+
+    .icon-option.selected {
+      background-color: var(--color-primary-100);
+      border-color: var(--color-primary);
+    }
+
+    .icon-option i {
+      width: 20px;
+      height: 20px;
+      color: var(--color-text-secondary);
+    }
+
+    .icon-option.selected i {
+      color: var(--color-primary-700);
+    }
+
+    /* Skeleton Loading */
+    .skeleton-card {
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-5);
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+    }
+
+    .skeleton-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-3);
+    }
+
+    /* Mobile: Sidebar hidden, content full width */
+    @media (max-width: 767px) {
+      .sidebar {
+        display: none;
+      }
+
+      .mobile-header {
+        display: flex;
+      }
+
+      .app-content {
+        padding: var(--space-4);
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-2);
+      }
+
+      .page-title {
+        font-size: var(--text-xl);
+      }
+
+      .page-header-actions {
+        display: none;
+      }
+
+      .project-card-actions {
+        opacity: 1;
+      }
+
+      .filter-tabs {
+        width: 100%;
+      }
+
+      .filter-tab {
+        flex: 1;
+        text-align: center;
+      }
+    }
+
+    /* Sidebar mobile overlay */
+    @media (max-width: 767px) {
+      .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: var(--z-modal-backdrop);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity var(--duration-200), visibility var(--duration-200);
+      }
+
+      .sidebar-overlay.open {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .sidebar.mobile-open {
+        display: flex;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: var(--z-modal);
+        transform: translateX(0);
+      }
+    }
+
+    /* Bottom Nav (Mobile) */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      padding: var(--space-2) var(--space-4);
+      padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
+      z-index: var(--z-fixed);
+    }
+
+    .bottom-nav-items {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-2);
+      color: var(--color-text-muted);
+      font-size: var(--text-xs);
+      cursor: pointer;
+      min-width: 64px;
+      border-radius: var(--radius-lg);
+      transition: color var(--duration-150);
+    }
+
+    .bottom-nav-item:hover,
+    .bottom-nav-item.active {
+      color: var(--color-primary);
+    }
+
+    .bottom-nav-item-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    @media (max-width: 767px) {
+      .bottom-nav {
+        display: block;
+      }
+
+      .app-content {
+        padding-bottom: calc(var(--space-4) + 80px);
+      }
+    }
+
+    /* FAB (Mobile) */
+    .fab {
+      display: none;
+      position: fixed;
+      bottom: calc(80px + env(safe-area-inset-bottom, 0px) + var(--space-4));
+      right: var(--space-4);
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background-color: var(--color-primary);
+      color: var(--color-white);
+      box-shadow: var(--shadow-lg);
+      z-index: var(--z-fixed);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color var(--duration-150), transform var(--duration-150);
+    }
+
+    .fab:hover {
+      background-color: var(--color-primary-hover);
+      transform: scale(1.05);
+    }
+
+    .fab:active {
+      transform: scale(0.95);
+    }
+
+    .fab-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    @media (max-width: 767px) {
+      .fab {
+        display: flex;
+      }
+    }
+
+    /* Dropdown menu positioning fix */
+    .project-card .dropdown {
+      position: static;
+    }
+
+    .project-card .dropdown-menu {
+      position: absolute;
+      top: auto;
+      right: var(--space-3);
+      left: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app">
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+      <button class="btn btn-ghost btn-icon" @click="toggleSidebar">
+        <i data-lucide="menu"></i>
+      </button>
+      <span class="mobile-header-title">Projects</span>
+      <div class="mobile-header-actions">
+        <div class="avatar avatar-sm">{{ userInitials }}</div>
+      </div>
+    </header>
+
+    <!-- Sidebar Overlay (Mobile) -->
+    <div class="sidebar-overlay" :class="{ open: sidebarOpen }" @click="toggleSidebar"></div>
+
+    <div class="app-shell">
+      <!-- Sidebar -->
+      <aside class="sidebar" :class="{ 'mobile-open': sidebarOpen }">
+        <div class="sidebar-header">
+          <span class="text-lg font-semibold">TaskFlow</span>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="sidebar-section">
+            <div class="nav nav-vertical">
+              <a href="002-dashboard.html" class="nav-item">
+                <i data-lucide="layout-dashboard" class="nav-item-icon"></i>
+                Dashboard
+              </a>
+              <a href="#" class="nav-item active">
+                <i data-lucide="folder" class="nav-item-icon"></i>
+                Projects
+              </a>
+              <a href="#" class="nav-item">
+                <i data-lucide="calendar" class="nav-item-icon"></i>
+                Calendar
+              </a>
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">Projects</div>
+            <div class="nav nav-vertical">
+              <a href="#" class="nav-item" v-for="project in activeProjects" :key="project.id">
+                <span class="project-dot" :style="{ backgroundColor: project.color, width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0 }"></span>
+                {{ project.name }}
+              </a>
+            </div>
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="flex items-center gap-3">
+            <div class="avatar avatar-sm">{{ userInitials }}</div>
+            <div class="flex-1">
+              <div class="text-sm font-medium">{{ user.name }}</div>
+              <div class="text-xs text-muted">{{ user.email }}</div>
+            </div>
+            <button class="btn btn-ghost btn-icon btn-sm">
+              <i data-lucide="settings"></i>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="app-content">
+        <!-- Page Header -->
+        <header class="page-header">
+          <div>
+            <h1 class="page-title">Projects</h1>
+            <p class="page-subtitle">{{ filteredProjects.length }} {{ filter === 'active' ? 'active' : 'archived' }} projects</p>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-primary" @click="openCreateModal">
+              <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+              New Project
+            </button>
+          </div>
+        </header>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+          <button
+            class="filter-tab"
+            :class="{ active: filter === 'active' }"
+            @click="filter = 'active'"
+          >
+            Active
+          </button>
+          <button
+            class="filter-tab"
+            :class="{ active: filter === 'archived' }"
+            @click="filter = 'archived'"
+          >
+            Archived
+          </button>
+        </div>
+
+        <!-- Loading State -->
+        <div class="project-grid" v-if="loading">
+          <div class="skeleton-card" v-for="i in 6" :key="i">
+            <div class="skeleton skeleton-icon"></div>
+            <div class="skeleton skeleton-text" style="width: 60%;"></div>
+            <div class="skeleton skeleton-text" style="width: 100%;"></div>
+            <div class="skeleton skeleton-text" style="width: 80%;"></div>
+            <div style="height: var(--space-4);"></div>
+            <div class="skeleton skeleton-text" style="width: 40%;"></div>
+          </div>
+        </div>
+
+        <!-- Empty State: No Projects -->
+        <div class="empty-state" v-else-if="filteredProjects.length === 0 && filter === 'active'">
+          <div class="empty-state-icon">
+            <i data-lucide="folder-plus"></i>
+          </div>
+          <h3 class="empty-state-title">No projects yet</h3>
+          <p class="empty-state-description">
+            Create your first project to start organizing your tasks.
+          </p>
+          <button class="btn btn-primary" @click="openCreateModal">Create Project</button>
+        </div>
+
+        <!-- Empty State: No Archived Projects -->
+        <div class="empty-state" v-else-if="filteredProjects.length === 0 && filter === 'archived'">
+          <div class="empty-state-icon">
+            <i data-lucide="archive"></i>
+          </div>
+          <h3 class="empty-state-title">No archived projects</h3>
+          <p class="empty-state-description">
+            When you archive a project, it will appear here.
+          </p>
+        </div>
+
+        <!-- Project Grid -->
+        <div class="project-grid" v-else>
+          <div
+            class="project-card"
+            :class="{ 'project-card--archived': project.archived_at }"
+            :style="{ '--accent-color': project.color }"
+            v-for="project in filteredProjects"
+            :key="project.id"
+            @click="openProject(project)"
+          >
+            <!-- Archived badge -->
+            <span class="badge project-card-badge" v-if="project.archived_at">Archived</span>
+
+            <div class="project-card-header">
+              <div class="project-card-icon" :style="getIconStyle(project.color)">
+                <i :data-lucide="project.icon"></i>
+              </div>
+              <div class="dropdown project-card-actions" :class="{ open: openDropdown === project.id }">
+                <button
+                  class="btn btn-ghost btn-icon btn-sm"
+                  @click.stop="toggleDropdown(project.id)"
+                >
+                  <i data-lucide="more-horizontal"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right">
+                  <button class="dropdown-item" @click.stop="openProject(project)">
+                    <i data-lucide="folder-open" style="width: 16px; height: 16px;"></i>
+                    Open
+                  </button>
+                  <button class="dropdown-item" @click.stop="editProject(project)">
+                    <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                    Edit
+                  </button>
+                  <button class="dropdown-item" @click.stop="toggleArchive(project)">
+                    <i :data-lucide="project.archived_at ? 'archive-restore' : 'archive'" style="width: 16px; height: 16px;"></i>
+                    {{ project.archived_at ? 'Unarchive' : 'Archive' }}
+                  </button>
+                  <div class="dropdown-divider"></div>
+                  <button class="dropdown-item dropdown-item-danger" @click.stop="deleteProject(project)">
+                    <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <h3 class="project-card-title">{{ project.name }}</h3>
+            <p class="project-card-description">{{ project.description || 'No description' }}</p>
+
+            <div class="project-card-footer">
+              <div
+                class="project-card-progress"
+                :class="{ 'project-card-progress--complete': project.completed_count === project.task_count && project.task_count > 0 }"
+              >
+                <div class="project-card-progress-bar">
+                  <div
+                    class="project-card-progress-fill"
+                    :style="{ width: getProgress(project) + '%' }"
+                  ></div>
+                </div>
+                <span v-if="project.completed_count === project.task_count && project.task_count > 0">
+                  <i data-lucide="check-circle" style="width: 14px; height: 14px; color: var(--color-success);"></i>
+                  All done
+                </span>
+                <span v-else>{{ project.completed_count }}/{{ project.task_count }} tasks</span>
+              </div>
+              <span class="project-card-meta">{{ formatRelativeTime(project.updated_at) }}</span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- FAB (Mobile) -->
+    <button class="fab" @click="openCreateModal">
+      <i data-lucide="plus" class="fab-icon"></i>
+    </button>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav-items">
+        <a href="002-dashboard.html" class="bottom-nav-item">
+          <i data-lucide="home" class="bottom-nav-item-icon"></i>
+          <span>Home</span>
+        </a>
+        <a href="#" class="bottom-nav-item active">
+          <i data-lucide="folder" class="bottom-nav-item-icon"></i>
+          <span>Projects</span>
+        </a>
+        <a href="#" class="bottom-nav-item">
+          <i data-lucide="bell" class="bottom-nav-item-icon"></i>
+          <span>Inbox</span>
+        </a>
+        <a href="#" class="bottom-nav-item">
+          <i data-lucide="settings" class="bottom-nav-item-icon"></i>
+          <span>Settings</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Create/Edit Project Modal -->
+    <div class="modal-backdrop" :class="{ open: showModal }" @click.self="closeModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title">{{ editingProject ? 'Edit Project' : 'New Project' }}</h2>
+          <button class="modal-close" @click="closeModal">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Name *</label>
+            <input
+              type="text"
+              class="input"
+              :class="{ 'input-error': formErrors.name }"
+              v-model="formData.name"
+              placeholder="My New Project"
+              @input="formErrors.name = ''"
+            >
+            <span class="form-error" v-if="formErrors.name">{{ formErrors.name }}</span>
+          </div>
+
+          <div class="form-group" style="margin-top: var(--space-4);">
+            <label class="form-label">Description (optional)</label>
+            <textarea
+              class="textarea"
+              v-model="formData.description"
+              placeholder="What is this project about?"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="form-group" style="margin-top: var(--space-4);">
+            <label class="form-label">Color</label>
+            <div class="color-picker">
+              <div
+                class="color-option"
+                :class="{ selected: formData.color === color }"
+                :style="{ backgroundColor: color }"
+                v-for="color in colors"
+                :key="color"
+                @click="formData.color = color"
+              >
+                <i data-lucide="check" v-if="formData.color === color"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: var(--space-4);">
+            <label class="form-label">Icon</label>
+            <div class="icon-picker">
+              <div
+                class="icon-option"
+                :class="{ selected: formData.icon === icon }"
+                v-for="icon in icons"
+                :key="icon"
+                @click="formData.icon = icon"
+              >
+                <i :data-lucide="icon"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" @click="closeModal">Cancel</button>
+          <button
+            class="btn btn-primary"
+            :class="{ 'btn-loading': saving }"
+            :disabled="saving"
+            @click="saveProject"
+          >
+            {{ editingProject ? 'Save Changes' : 'Create Project' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-backdrop" :class="{ open: showDeleteModal }" @click.self="closeDeleteModal">
+      <div class="modal modal-sm">
+        <div class="modal-header">
+          <h2 class="modal-title">Delete Project</h2>
+          <button class="modal-close" @click="closeDeleteModal">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete <strong>{{ projectToDelete?.name }}</strong>?</p>
+          <p class="text-sm text-muted" style="margin-top: var(--space-2);">This action cannot be undone. All tasks in this project will be permanently deleted.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" @click="closeDeleteModal">Cancel</button>
+          <button
+            class="btn btn-danger"
+            :class="{ 'btn-loading': deleting }"
+            :disabled="deleting"
+            @click="confirmDelete"
+          >
+            Delete Project
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <script>
+    const { createApp, ref, computed, onMounted, nextTick, watch } = Vue;
+
+    // Mock data (matches mockdb-data.json structure)
+    const mockData = {
+      currentUser: {
+        id: "user-1",
+        email: "alice@taskflow.app",
+        name: "Alice Johnson",
+        avatar_url: null
+      },
+      projects: [
+        {
+          id: "proj-1",
+          name: "Website Redesign",
+          description: "Complete overhaul of company website with new branding, improved UX, and mobile-first approach",
+          color: "#3b82f6",
+          icon: "globe",
+          archived_at: null,
+          created_at: "2024-12-01T10:30:00Z",
+          updated_at: "2025-01-14T08:00:00Z",
+          task_count: 8,
+          completed_count: 3
+        },
+        {
+          id: "proj-2",
+          name: "Mobile App v2",
+          description: "iOS and Android app with offline support and push notifications",
+          color: "#22c55e",
+          icon: "smartphone",
+          archived_at: null,
+          created_at: "2024-12-10T11:00:00Z",
+          updated_at: "2025-01-13T16:45:00Z",
+          task_count: 12,
+          completed_count: 5
+        },
+        {
+          id: "proj-3",
+          name: "Q1 2025 Planning",
+          description: "Quarterly planning, OKRs, and team goals",
+          color: "#f59e0b",
+          icon: "calendar",
+          archived_at: null,
+          created_at: "2025-01-02T09:00:00Z",
+          updated_at: "2025-01-12T14:20:00Z",
+          task_count: 6,
+          completed_count: 2
+        },
+        {
+          id: "proj-4",
+          name: "Customer Research",
+          description: "User interviews, surveys, and feedback analysis",
+          color: "#8b5cf6",
+          icon: "users",
+          archived_at: "2024-11-30T18:00:00Z",
+          created_at: "2024-10-15T10:00:00Z",
+          updated_at: "2024-11-30T18:00:00Z",
+          task_count: 4,
+          completed_count: 4
+        }
+      ]
+    };
+
+    // Available colors
+    const projectColors = [
+      '#3b82f6', // blue
+      '#22c55e', // green
+      '#f59e0b', // amber
+      '#ef4444', // red
+      '#8b5cf6', // purple
+      '#ec4899', // pink
+      '#06b6d4', // cyan
+      '#6366f1', // indigo
+      '#14b8a6', // teal
+      '#f97316'  // orange
+    ];
+
+    // Available icons
+    const projectIcons = [
+      'folder', 'briefcase', 'globe', 'heart', 'star', 'zap',
+      'coffee', 'book-open', 'camera', 'music', 'laptop', 'home'
+    ];
+
+    createApp({
+      setup() {
+        // State
+        const loading = ref(true);
+        const sidebarOpen = ref(false);
+        const user = ref(mockData.currentUser);
+        const projects = ref([...mockData.projects]);
+        const filter = ref('active');
+        const openDropdown = ref(null);
+
+        // Modal state
+        const showModal = ref(false);
+        const showDeleteModal = ref(false);
+        const editingProject = ref(null);
+        const projectToDelete = ref(null);
+        const saving = ref(false);
+        const deleting = ref(false);
+
+        // Form data
+        const formData = ref({
+          name: '',
+          description: '',
+          color: projectColors[0],
+          icon: projectIcons[0]
+        });
+        const formErrors = ref({ name: '' });
+
+        // Constants
+        const colors = ref(projectColors);
+        const icons = ref(projectIcons);
+
+        // Computed
+        const userInitials = computed(() => {
+          return user.value.name
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase();
+        });
+
+        const activeProjects = computed(() => {
+          return projects.value.filter(p => !p.archived_at);
+        });
+
+        const filteredProjects = computed(() => {
+          if (filter.value === 'active') {
+            return projects.value.filter(p => !p.archived_at);
+          } else {
+            return projects.value.filter(p => p.archived_at);
+          }
+        });
+
+        // Methods
+        const getProgress = (project) => {
+          if (project.task_count === 0) return 0;
+          return Math.round((project.completed_count / project.task_count) * 100);
+        };
+
+        const getIconStyle = (color) => {
+          // Create lighter background and darker icon color
+          return {
+            '--icon-bg': color + '20',
+            '--icon-color': color
+          };
+        };
+
+        const formatRelativeTime = (dateStr) => {
+          const date = new Date(dateStr);
+          const now = new Date();
+          const diffMs = now - date;
+          const diffMins = Math.floor(diffMs / 60000);
+          const diffHours = Math.floor(diffMs / 3600000);
+          const diffDays = Math.floor(diffMs / 86400000);
+
+          if (diffMins < 60) {
+            return diffMins <= 1 ? 'Just now' : `${diffMins}m ago`;
+          } else if (diffHours < 24) {
+            return `${diffHours}h ago`;
+          } else if (diffDays < 7) {
+            return `${diffDays}d ago`;
+          } else {
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          }
+        };
+
+        const toggleSidebar = () => {
+          sidebarOpen.value = !sidebarOpen.value;
+        };
+
+        const toggleDropdown = (projectId) => {
+          openDropdown.value = openDropdown.value === projectId ? null : projectId;
+        };
+
+        const openProject = (project) => {
+          console.log('Open project:', project.id);
+          // Navigate to /projects/:id
+        };
+
+        const openCreateModal = () => {
+          editingProject.value = null;
+          formData.value = {
+            name: '',
+            description: '',
+            color: projectColors[0],
+            icon: projectIcons[0]
+          };
+          formErrors.value = { name: '' };
+          showModal.value = true;
+          nextTick(() => {
+            lucide.createIcons();
+          });
+        };
+
+        const editProject = (project) => {
+          editingProject.value = project;
+          formData.value = {
+            name: project.name,
+            description: project.description || '',
+            color: project.color,
+            icon: project.icon
+          };
+          formErrors.value = { name: '' };
+          openDropdown.value = null;
+          showModal.value = true;
+          nextTick(() => {
+            lucide.createIcons();
+          });
+        };
+
+        const closeModal = () => {
+          showModal.value = false;
+          editingProject.value = null;
+        };
+
+        const saveProject = async () => {
+          // Validate
+          if (!formData.value.name.trim()) {
+            formErrors.value.name = 'Project name is required';
+            return;
+          }
+          if (formData.value.name.length > 100) {
+            formErrors.value.name = 'Project name must be 100 characters or less';
+            return;
+          }
+
+          saving.value = true;
+
+          // Simulate API call
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          if (editingProject.value) {
+            // Update existing project
+            const index = projects.value.findIndex(p => p.id === editingProject.value.id);
+            if (index !== -1) {
+              projects.value[index] = {
+                ...projects.value[index],
+                name: formData.value.name.trim(),
+                description: formData.value.description.trim() || null,
+                color: formData.value.color,
+                icon: formData.value.icon,
+                updated_at: new Date().toISOString()
+              };
+            }
+          } else {
+            // Create new project
+            const newProject = {
+              id: 'proj-' + Date.now(),
+              name: formData.value.name.trim(),
+              description: formData.value.description.trim() || null,
+              color: formData.value.color,
+              icon: formData.value.icon,
+              archived_at: null,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              task_count: 0,
+              completed_count: 0
+            };
+            projects.value.unshift(newProject);
+          }
+
+          saving.value = false;
+          closeModal();
+
+          // Re-render icons
+          nextTick(() => {
+            lucide.createIcons();
+          });
+        };
+
+        const toggleArchive = async (project) => {
+          openDropdown.value = null;
+
+          // Simulate API call
+          const index = projects.value.findIndex(p => p.id === project.id);
+          if (index !== -1) {
+            projects.value[index] = {
+              ...projects.value[index],
+              archived_at: project.archived_at ? null : new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            };
+          }
+
+          nextTick(() => {
+            lucide.createIcons();
+          });
+        };
+
+        const deleteProject = (project) => {
+          openDropdown.value = null;
+          projectToDelete.value = project;
+          showDeleteModal.value = true;
+        };
+
+        const closeDeleteModal = () => {
+          showDeleteModal.value = false;
+          projectToDelete.value = null;
+        };
+
+        const confirmDelete = async () => {
+          if (!projectToDelete.value) return;
+
+          deleting.value = true;
+
+          // Simulate API call
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          projects.value = projects.value.filter(p => p.id !== projectToDelete.value.id);
+
+          deleting.value = false;
+          closeDeleteModal();
+
+          nextTick(() => {
+            lucide.createIcons();
+          });
+        };
+
+        // Close dropdown when clicking outside
+        const handleClickOutside = (e) => {
+          if (openDropdown.value && !e.target.closest('.dropdown')) {
+            openDropdown.value = null;
+          }
+        };
+
+        // Watch for modal open to re-render icons
+        watch(showModal, (newVal) => {
+          if (newVal) {
+            nextTick(() => {
+              lucide.createIcons();
+            });
+          }
+        });
+
+        // Simulate loading
+        onMounted(() => {
+          document.addEventListener('click', handleClickOutside);
+
+          setTimeout(() => {
+            loading.value = false;
+            nextTick(() => {
+              lucide.createIcons();
+            });
+          }, 600);
+        });
+
+        return {
+          loading,
+          sidebarOpen,
+          user,
+          projects,
+          filter,
+          openDropdown,
+          showModal,
+          showDeleteModal,
+          editingProject,
+          projectToDelete,
+          saving,
+          deleting,
+          formData,
+          formErrors,
+          colors,
+          icons,
+          userInitials,
+          activeProjects,
+          filteredProjects,
+          getProgress,
+          getIconStyle,
+          formatRelativeTime,
+          toggleSidebar,
+          toggleDropdown,
+          openProject,
+          openCreateModal,
+          editProject,
+          closeModal,
+          saveProject,
+          toggleArchive,
+          deleteProject,
+          closeDeleteModal,
+          confirmDelete
+        };
+      }
+    }).mount('#app');
+
+    // Initialize Lucide icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>

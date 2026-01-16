@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simple project and task management for freelancers and small teams. No complexity, no learning curve. Get started free.">
+  <title>TaskFlow - Task management that gets out of your way</title>
+  <link rel="stylesheet" href="shared/tokens.css">
+  <link rel="stylesheet" href="shared/components.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Landing page specific styles */
+    .landing-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--color-border);
+      z-index: var(--z-fixed);
+    }
+
+    .landing-nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--header-height);
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: 0 var(--space-4);
+    }
+
+    .landing-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      color: var(--color-text);
+    }
+
+    .landing-logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-600) 100%);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .landing-nav-links {
+      display: none;
+      align-items: center;
+      gap: var(--space-6);
+    }
+
+    .landing-nav-link {
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-text-secondary);
+      transition: color var(--duration-150);
+    }
+
+    .landing-nav-link:hover {
+      color: var(--color-text);
+    }
+
+    .landing-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .mobile-menu-btn {
+      display: flex;
+      padding: var(--space-2);
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-4);
+      z-index: var(--z-fixed);
+    }
+
+    .mobile-menu.open {
+      display: block;
+    }
+
+    .mobile-menu-link {
+      display: block;
+      padding: var(--space-3) 0;
+      font-size: var(--text-base);
+      font-weight: var(--font-medium);
+      color: var(--color-text);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .mobile-menu-link:last-of-type {
+      border-bottom: none;
+    }
+
+    /* Hero */
+    .hero {
+      padding: calc(var(--header-height) + var(--space-16)) var(--space-4) var(--space-16);
+      background: linear-gradient(180deg, var(--color-primary-50) 0%, var(--color-white) 100%);
+      text-align: center;
+    }
+
+    .hero-headline {
+      font-size: var(--text-4xl);
+      font-weight: var(--font-bold);
+      color: var(--color-text);
+      line-height: var(--leading-tight);
+      margin-bottom: var(--space-4);
+      letter-spacing: var(--tracking-tight);
+    }
+
+    .hero-subheadline {
+      font-size: var(--text-lg);
+      color: var(--color-text-secondary);
+      max-width: 600px;
+      margin: 0 auto var(--space-8);
+      line-height: var(--leading-relaxed);
+    }
+
+    .hero-ctas {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      justify-content: center;
+      margin-bottom: var(--space-12);
+    }
+
+    .hero-screenshot {
+      max-width: 1000px;
+      margin: 0 auto;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-2xl);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      overflow: hidden;
+    }
+
+    .hero-screenshot-inner {
+      aspect-ratio: 16/10;
+      background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-gray-50) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-muted);
+    }
+
+    /* Social Proof */
+    .social-proof {
+      padding: var(--space-12) var(--space-4);
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .social-proof-text {
+      text-align: center;
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-6);
+    }
+
+    .social-proof-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+      color: var(--color-text);
+    }
+
+    .stat-label {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+    }
+
+    /* Features */
+    .features {
+      padding: var(--space-20) var(--space-4);
+      background: var(--color-background);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: var(--space-12);
+    }
+
+    .section-title {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      color: var(--color-text);
+      margin-bottom: var(--space-3);
+    }
+
+    .section-subtitle {
+      font-size: var(--text-lg);
+      color: var(--color-text-secondary);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      text-align: center;
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--color-primary-100);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-2xl);
+      margin: 0 auto var(--space-4);
+    }
+
+    .feature-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+
+    .feature-description {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--leading-relaxed);
+    }
+
+    /* How It Works */
+    .how-it-works {
+      padding: var(--space-20) var(--space-4);
+      background: var(--color-surface);
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-8);
+      max-width: 800px;
+      margin: 0 auto var(--space-10);
+    }
+
+    .step {
+      display: flex;
+      gap: var(--space-4);
+      align-items: flex-start;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      background: var(--color-primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-bold);
+      flex-shrink: 0;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+    }
+
+    .step-description {
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--leading-relaxed);
+    }
+
+    /* Testimonials */
+    .testimonials {
+      padding: var(--space-20) var(--space-4);
+      background: var(--color-background);
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .testimonial-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+    }
+
+    .testimonial-quote {
+      font-size: var(--text-base);
+      color: var(--color-text);
+      line-height: var(--leading-relaxed);
+      margin-bottom: var(--space-4);
+      font-style: italic;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .testimonial-author-info {
+      flex: 1;
+    }
+
+    .testimonial-name {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--color-text);
+    }
+
+    .testimonial-title {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    /* Pricing */
+    .pricing {
+      padding: var(--space-20) var(--space-4);
+      background: var(--color-surface);
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+      max-width: 700px;
+      margin: 0 auto var(--space-8);
+    }
+
+    .pricing-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+    }
+
+    .pricing-card.featured {
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-primary);
+    }
+
+    .pricing-card-header {
+      margin-bottom: var(--space-4);
+    }
+
+    .pricing-name {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+
+    .pricing-price {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-1);
+    }
+
+    .pricing-amount {
+      font-size: var(--text-4xl);
+      font-weight: var(--font-bold);
+      color: var(--color-text);
+    }
+
+    .pricing-period {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+    }
+
+    .pricing-features {
+      margin-bottom: var(--space-6);
+    }
+
+    .pricing-feature {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) 0;
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+    }
+
+    .pricing-feature-icon {
+      color: var(--color-success);
+    }
+
+    .pricing-link {
+      text-align: center;
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+    }
+
+    .pricing-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Final CTA */
+    .final-cta {
+      padding: var(--space-20) var(--space-4);
+      background: var(--color-gray-900);
+      text-align: center;
+    }
+
+    .final-cta-headline {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      color: white;
+      margin-bottom: var(--space-3);
+    }
+
+    .final-cta-subtext {
+      font-size: var(--text-base);
+      color: var(--color-gray-400);
+      margin-bottom: var(--space-8);
+    }
+
+    /* Footer */
+    .footer {
+      padding: var(--space-12) var(--space-4);
+      background: var(--color-gray-950);
+      color: var(--color-gray-400);
+    }
+
+    .footer-top {
+      max-width: var(--container-max);
+      margin: 0 auto var(--space-8);
+    }
+
+    .footer-brand {
+      margin-bottom: var(--space-6);
+    }
+
+    .footer-brand-name {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+      color: white;
+      margin-bottom: var(--space-2);
+    }
+
+    .footer-brand-tagline {
+      font-size: var(--text-sm);
+    }
+
+    .footer-links {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+    }
+
+    .footer-column-title {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: white;
+      margin-bottom: var(--space-3);
+    }
+
+    .footer-link {
+      display: block;
+      font-size: var(--text-sm);
+      color: var(--color-gray-400);
+      padding: var(--space-1) 0;
+      transition: color var(--duration-150);
+    }
+
+    .footer-link:hover {
+      color: white;
+    }
+
+    .footer-bottom {
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--color-gray-800);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      align-items: center;
+      text-align: center;
+    }
+
+    .footer-copyright {
+      font-size: var(--text-sm);
+    }
+
+    .footer-social {
+      display: flex;
+      gap: var(--space-4);
+    }
+
+    .footer-social-link {
+      color: var(--color-gray-500);
+      transition: color var(--duration-150);
+    }
+
+    .footer-social-link:hover {
+      color: white;
+    }
+
+    /* Responsive */
+    @media (min-width: 640px) {
+      .hero-headline {
+        font-size: var(--text-5xl);
+      }
+
+      .hero-ctas {
+        flex-direction: row;
+      }
+
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .pricing-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .testimonials-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .footer-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .mobile-menu-btn {
+        display: none;
+      }
+
+      .landing-nav-links {
+        display: flex;
+      }
+
+      .landing-nav-actions .btn-ghost {
+        display: inline-flex;
+      }
+
+      .steps {
+        flex-direction: row;
+        gap: var(--space-8);
+      }
+
+      .step {
+        flex-direction: column;
+        text-align: center;
+        flex: 1;
+      }
+
+      .step-number {
+        margin: 0 auto var(--space-3);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="landing-nav">
+    <div class="landing-nav-inner">
+      <a href="/" class="landing-logo">
+        <span class="landing-logo-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 11 12 14 22 4"></polyline>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+        </span>
+        TaskFlow
+      </a>
+
+      <div class="landing-nav-links">
+        <a href="#features" class="landing-nav-link">Features</a>
+        <a href="#pricing" class="landing-nav-link">Pricing</a>
+        <a href="#" class="landing-nav-link">About</a>
+      </div>
+
+      <div class="landing-nav-actions">
+        <a href="005-login.html" class="btn btn-ghost" style="display: none;">Log In</a>
+        <a href="006-signup.html" class="btn btn-primary btn-sm">Sign Up Free</a>
+        <button class="mobile-menu-btn btn btn-ghost btn-icon" onclick="toggleMobileMenu()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#features" class="mobile-menu-link" onclick="toggleMobileMenu()">Features</a>
+    <a href="#pricing" class="mobile-menu-link" onclick="toggleMobileMenu()">Pricing</a>
+    <a href="#" class="mobile-menu-link">About</a>
+    <a href="005-login.html" class="mobile-menu-link">Log In</a>
+    <div style="padding-top: var(--space-4);">
+      <a href="006-signup.html" class="btn btn-primary btn-block">Sign Up Free</a>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <h1 class="hero-headline">Task management that<br>gets out of your way</h1>
+      <p class="hero-subheadline">Simple project and task management for freelancers and small teams. No complexity, no learning curve.</p>
+      <div class="hero-ctas">
+        <a href="006-signup.html" class="btn btn-primary btn-lg">Get Started Free</a>
+        <a href="#how-it-works" class="btn btn-secondary btn-lg">See How It Works</a>
+      </div>
+      <div class="hero-screenshot">
+        <div class="hero-screenshot-inner">
+          <span class="text-muted">Dashboard Preview</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social Proof -->
+  <section class="social-proof">
+    <p class="social-proof-text">Trusted by 1,000+ freelancers and small teams</p>
+    <div class="social-proof-stats">
+      <div class="stat-item">
+        <div class="stat-value">1,000+</div>
+        <div class="stat-label">Users</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">5,000+</div>
+        <div class="stat-label">Tasks/Day</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">4.9/5</div>
+        <div class="stat-label">Rating</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Everything you need, nothing you don't</h2>
+        <p class="section-subtitle">Focus on your work, not your tools</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">&#9889;</div>
+          <h3 class="feature-title">Lightning Fast</h3>
+          <p class="feature-description">Every action completes in under 100ms. No loading spinners, no waiting around.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128241;</div>
+          <h3 class="feature-title">Mobile First</h3>
+          <p class="feature-description">Full experience on any device. Not "mobile-friendly"&mdash;mobile-equal.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128101;</div>
+          <h3 class="feature-title">Team Ready</h3>
+          <p class="feature-description">Invite your team in seconds. Simple roles, no enterprise complexity.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#10024;</div>
+          <h3 class="feature-title">Beautifully Simple</h3>
+          <p class="feature-description">Clean design that doesn't get in your way. Focus on your work, not the tool.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128276;</div>
+          <h3 class="feature-title">Smart Reminders</h3>
+          <p class="feature-description">Never miss a deadline. Get reminded when tasks are due or overdue.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128274;</div>
+          <h3 class="feature-title">Private &amp; Secure</h3>
+          <p class="feature-description">Your data is yours. We don't sell it, we don't show ads.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Get started in minutes</h2>
+        <p class="section-subtitle">No tutorials needed</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3 class="step-title">Create a project</h3>
+            <p class="step-description">Give it a name and color. That's it. No templates, no configuration.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3 class="step-title">Add your tasks</h3>
+            <p class="step-description">Write what needs to be done. Set due dates if you want.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3 class="step-title">Get things done</h3>
+            <p class="step-description">Check off tasks as you complete them. Feel the satisfaction.</p>
+          </div>
+        </div>
+      </div>
+      <div style="text-align: center;">
+        <a href="006-signup.html" class="btn btn-primary btn-lg">Get Started Free</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">What our users say</h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <p class="testimonial-quote">"Finally, a task manager that doesn't require a PhD to use. I was up and running in 2 minutes."</p>
+          <div class="testimonial-author">
+            <div class="avatar">SC</div>
+            <div class="testimonial-author-info">
+              <div class="testimonial-name">Sarah Chen</div>
+              <div class="testimonial-title">Freelance Designer</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-quote">"We tried Asana, Trello, and Notion. TaskFlow is the first tool our whole team actually uses."</p>
+          <div class="testimonial-author">
+            <div class="avatar" style="background-color: var(--color-success-100); color: var(--color-success-700);">MJ</div>
+            <div class="testimonial-author-info">
+              <div class="testimonial-name">Marcus Johnson</div>
+              <div class="testimonial-title">Marketing Agency Founder</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-quote">"I love that it works perfectly on my phone. Most apps feel like an afterthought on mobile."</p>
+          <div class="testimonial-author">
+            <div class="avatar" style="background-color: var(--color-warning-100); color: var(--color-warning-700);">AR</div>
+            <div class="testimonial-author-info">
+              <div class="testimonial-name">Alex Rivera</div>
+              <div class="testimonial-title">Consultant</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Simple, fair pricing</h2>
+        <p class="section-subtitle">No hidden fees, no surprises</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="pricing-card-header">
+            <div class="pricing-name">Free</div>
+            <div class="pricing-price">
+              <span class="pricing-amount">$0</span>
+              <span class="pricing-period">forever</span>
+            </div>
+          </div>
+          <div class="pricing-features">
+            <div class="pricing-feature">
+              <span class="pricing-feature-icon">&#10003;</span>
+              <span>3 projects</span>
+            </div>
+            <div class="pricing-feature">
+              <span class="pricing-feature-icon">&#10003;</span>
+              <span>100 tasks</span>
+            </div>
+            <div class="pricing-feature">
+              <span class="pricing-feature-icon">&#10003;</span>
+              <span>Solo only</span>
+            </div>
+          </div>
+          <a href="006-signup.html" class="btn btn-secondary btn-block">Get Started</a>
+        </div>
+        <div class="pricing-card featured">
+          <div class="pricing-card-header">
+            <div class="pricing-name">Pro</div>
+            <div class="pricing-price">
+              <span class="pricing-amount">$8</span>
+              <span class="pricing-period">/user/month</span>
+            </div>
+          </div>
+          <div class="pricing-features">
+            <div class="pricing-feature">
+              <span class="pricing-feature-icon">&#10003;</span>
+              <span>Unlimited projects</span>
+            </div>
+            <div class="pricing-feature">
+              <span class="pricing-feature-icon">&#10003;</span>
+              <span>Unlimited tasks</span>
+            </div>
+            <div class="pricing-feature">
+              <span class="pricing-feature-icon">&#10003;</span>
+              <span>Team collaboration</span>
+            </div>
+            <div class="pricing-feature">
+              <span class="pricing-feature-icon">&#10003;</span>
+              <span>Priority support</span>
+            </div>
+          </div>
+          <a href="006-signup.html" class="btn btn-primary btn-block">Start Free Trial</a>
+        </div>
+      </div>
+      <p class="text-center">
+        <a href="#" class="pricing-link">See full pricing details &rarr;</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="final-cta">
+    <div class="container">
+      <h2 class="final-cta-headline">Ready to get organized?</h2>
+      <p class="final-cta-subtext">Start your free account today. No credit card required.</p>
+      <a href="006-signup.html" class="btn btn-primary btn-lg">Get Started Free</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-brand-name">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 11 12 14 22 4"></polyline>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+          TaskFlow
+        </div>
+        <p class="footer-brand-tagline">Task management that gets out of your way.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-column">
+          <div class="footer-column-title">Product</div>
+          <a href="#features" class="footer-link">Features</a>
+          <a href="#pricing" class="footer-link">Pricing</a>
+          <a href="#" class="footer-link">Changelog</a>
+        </div>
+        <div class="footer-column">
+          <div class="footer-column-title">Company</div>
+          <a href="#" class="footer-link">About</a>
+          <a href="#" class="footer-link">Blog</a>
+          <a href="#" class="footer-link">Careers</a>
+        </div>
+        <div class="footer-column">
+          <div class="footer-column-title">Legal</div>
+          <a href="#" class="footer-link">Privacy</a>
+          <a href="#" class="footer-link">Terms</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copyright">&copy; 2025 TaskFlow. All rights reserved.</p>
+      <div class="footer-social">
+        <a href="#" class="footer-social-link">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+        <a href="#" class="footer-social-link">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('open');
+    }
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+
+        e.preventDefault();
+        const target = document.querySelector(targetId);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

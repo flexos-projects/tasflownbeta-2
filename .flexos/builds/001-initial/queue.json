@@ -1,0 +1,27 @@
+{
+  "buildId": "001-initial",
+  "status": "complete",
+  "startedAt": "2025-01-10T00:00:00Z",
+  "completedAt": "2025-01-11T00:00:00Z",
+  "current": null,
+  "tasks": [
+    { "id": "001", "status": "complete" },
+    { "id": "002", "status": "complete" },
+    { "id": "003", "status": "complete" },
+    { "id": "004", "status": "complete" },
+    { "id": "005", "status": "complete" },
+    { "id": "006", "status": "complete" },
+    { "id": "007", "status": "complete" },
+    { "id": "008", "status": "complete" },
+    { "id": "009", "status": "complete" },
+    { "id": "010", "status": "complete" },
+    { "id": "011", "status": "complete" },
+    { "id": "012", "status": "complete" },
+    { "id": "013", "status": "complete" },
+    { "id": "014", "status": "complete" },
+    { "id": "015", "status": "complete" },
+    { "id": "016", "status": "complete" },
+    { "id": "017", "status": "complete" },
+    { "id": "018", "status": "complete" }
+  ]
+}

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Log In - TaskFlow</title>
+  <meta name="description" content="Log in to your TaskFlow account to manage your projects and tasks.">
+
+  <!-- Design Tokens & Components -->
+  <link rel="stylesheet" href="shared/tokens.css">
+  <link rel="stylesheet" href="shared/components.css">
+
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    /* Page-specific styles */
+    .login-page {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+      background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+    }
+
+    .login-logo {
+      margin-bottom: var(--space-8);
+      text-decoration: none;
+      color: var(--color-gray-900);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .login-logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--color-primary);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .login-logo-text {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      background: white;
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      padding: var(--space-8);
+    }
+
+    .login-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-semibold);
+      color: var(--color-gray-900);
+      text-align: center;
+      margin: 0 0 var(--space-6) 0;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+
+    .password-field {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      padding: var(--space-2);
+      cursor: pointer;
+      color: var(--color-gray-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      min-width: 44px;
+      min-height: 44px;
+    }
+
+    .password-toggle:hover {
+      color: var(--color-gray-700);
+      background: var(--color-gray-100);
+    }
+
+    .password-toggle:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .password-field .input {
+      padding-right: 52px;
+    }
+
+    .forgot-password-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: calc(var(--space-1) * -1);
+    }
+
+    .forgot-password-link {
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    .forgot-password-link:hover {
+      text-decoration: underline;
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: var(--space-6);
+      font-size: var(--text-sm);
+      color: var(--color-gray-600);
+    }
+
+    .login-footer a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: var(--font-medium);
+    }
+
+    .login-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .alert {
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .alert-error {
+      background: var(--color-red-50);
+      color: var(--color-red-700);
+      border: 1px solid var(--color-red-200);
+    }
+
+    .alert-error svg {
+      flex-shrink: 0;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 480px) {
+      .login-card {
+        padding: var(--space-6);
+        border-radius: var(--radius-lg);
+      }
+
+      .login-page {
+        padding: var(--space-4);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app">
+    <div class="login-page">
+      <!-- Logo -->
+      <a href="001-landing.html" class="login-logo">
+        <div class="login-logo-icon">
+          <i data-lucide="check-square" style="width: 18px; height: 18px;"></i>
+        </div>
+        <span class="login-logo-text">TaskFlow</span>
+      </a>
+
+      <!-- Login Card -->
+      <div class="login-card">
+        <h1 class="login-title">Welcome back</h1>
+
+        <!-- Error Alert -->
+        <div v-if="error" class="alert alert-error" style="margin-bottom: var(--space-5);">
+          <i data-lucide="alert-circle" style="width: 16px; height: 16px;"></i>
+          <span>{{ error }}</span>
+        </div>
+
+        <form class="login-form" @submit.prevent="handleSubmit">
+          <!-- Email -->
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              class="input"
+              :class="{ 'input-error': emailError }"
+              v-model="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              required
+              autofocus
+              @blur="validateEmail"
+            >
+            <span v-if="emailError" class="form-error">{{ emailError }}</span>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <div class="password-field">
+              <input
+                :type="showPassword ? 'text' : 'password'"
+                id="password"
+                class="input"
+                v-model="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              >
+              <button
+                type="button"
+                class="password-toggle"
+                @click="togglePassword"
+                :aria-label="showPassword ? 'Hide password' : 'Show password'"
+              >
+                <i :data-lucide="showPassword ? 'eye-off' : 'eye'" style="width: 18px; height: 18px;"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Forgot Password -->
+          <div class="forgot-password-row">
+            <a :href="'004-forgot-password.html' + (email ? '?email=' + encodeURIComponent(email) : '')" class="forgot-password-link">
+              Forgot password?
+            </a>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="btn btn-primary btn-lg btn-block"
+            :class="{ 'btn-loading': isLoading }"
+            :disabled="isLoading"
+          >
+            <span v-if="!isLoading">Log In</span>
+            <span v-else>Logging in...</span>
+          </button>
+        </form>
+
+        <!-- Footer -->
+        <div class="login-footer">
+          Don't have an account?
+          <a :href="'006-signup.html' + (email ? '?email=' + encodeURIComponent(email) : '')">Sign up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <script>
+    const { createApp, ref, onMounted, nextTick } = Vue;
+
+    createApp({
+      setup() {
+        // State
+        const email = ref('');
+        const password = ref('');
+        const showPassword = ref(false);
+        const isLoading = ref(false);
+        const error = ref('');
+        const emailError = ref('');
+
+        // Get email from URL if passed
+        onMounted(() => {
+          const params = new URLSearchParams(window.location.search);
+          if (params.get('email')) {
+            email.value = params.get('email');
+          }
+          // Initialize Lucide icons
+          lucide.createIcons();
+        });
+
+        // Toggle password visibility
+        const togglePassword = async () => {
+          showPassword.value = !showPassword.value;
+          // Re-render icons after state change
+          await nextTick();
+          lucide.createIcons();
+        };
+
+        // Validate email on blur
+        const validateEmail = () => {
+          if (!email.value) {
+            emailError.value = '';
+            return;
+          }
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email.value)) {
+            emailError.value = 'Please enter a valid email address';
+          } else {
+            emailError.value = '';
+          }
+        };
+
+        // Handle form submission
+        const handleSubmit = async () => {
+          // Clear previous errors
+          error.value = '';
+          emailError.value = '';
+
+          // Validate
+          validateEmail();
+          if (emailError.value) return;
+
+          if (!password.value) {
+            error.value = 'Please enter your password';
+            return;
+          }
+
+          // Simulate loading
+          isLoading.value = true;
+
+          // Simulate API call
+          await new Promise(resolve => setTimeout(resolve, 1500));
+
+          // Simulate different outcomes
+          const random = Math.random();
+          if (random < 0.3) {
+            // Simulate error
+            error.value = 'Invalid email or password';
+            isLoading.value = false;
+            return;
+          }
+
+          // Success - redirect
+          const params = new URLSearchParams(window.location.search);
+          const redirect = params.get('redirect');
+          if (redirect && redirect.startsWith('/')) {
+            window.location.href = redirect;
+          } else {
+            window.location.href = '002-dashboard.html';
+          }
+        };
+
+        return {
+          email,
+          password,
+          showPassword,
+          isLoading,
+          error,
+          emailError,
+          togglePassword,
+          validateEmail,
+          handleSubmit
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
