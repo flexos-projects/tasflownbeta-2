@@ -7,13 +7,14 @@ priority: high
 sequence: 7
 route: /dashboard
 prototype: 002-dashboard.html
-relatesTo:
-  - 003-features_core
-  - 008-pages_projects
 tags:
   - app
   - authenticated
 generatedBy: ai
+relatesTo:
+  - "003-features_core"
+  - "008-pages_projects"
+  - "/.flexos/specs/015-flows_task-management.md"
 ---
 
 # Dashboard Page Spec
