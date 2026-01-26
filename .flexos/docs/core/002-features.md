@@ -5,6 +5,8 @@ title: TaskFlow Features
 description: Complete feature inventory organized by priority and release phase
 sequence: 2
 status: active
+relatesTo:
+  - "/.flexos/specs/001-vision_product.md"
 ---
 
 # TaskFlow Features
