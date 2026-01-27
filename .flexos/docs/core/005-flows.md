@@ -1,12 +1,12 @@
 ---
-type: core
-subtype: flows
-title: TaskFlow User Flows
-description: Key user journeys, interactions, and edge cases
+type: "core"
+subtype: "flows"
+title: "TaskFlow User Flows"
+description: "Key user journeys, interactions, and edge cases"
 sequence: 5
-status: active
+status: "active"
+flowSteps: ["/.flexos/builds/001-initial/specs/gaps-analysis.md"]
 ---
-
 # TaskFlow User Flows
 
 ## Flow Philosophy
